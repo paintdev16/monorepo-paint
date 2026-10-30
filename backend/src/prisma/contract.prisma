@@ -3,6 +3,7 @@
 model User {
   id           String @id
   email        String @unique
+  name         String?
   passwordHash String
   sessions     AuthSession[]
 }

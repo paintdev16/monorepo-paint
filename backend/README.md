@@ -138,7 +138,7 @@ Inyecta `PrismaService` desde `src/prisma/prisma.service.ts` en tus servicios de
 
 Configura `JWT_SECRET` en `.env` con un secreto aleatorio de al menos 32 bytes (por ejemplo, genera uno con `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`). El servidor no inicia si falta. Aplica el contrato a PostgreSQL antes de usar la API; se incluye una migración inicial en `migrations/`.
 
-- `POST /auth/register`: `{ "email", "password" }`, registra un usuario; contraseña de 12 a 256 caracteres.
+- `POST /auth/register`: `{ "name", "email", "password" }`, registra un usuario; nombre de 1 a 100 caracteres y contraseña de 12 a 256 caracteres. Las cuentas anteriores pueden tener `name: null`.
 - `POST /auth/login`: recibe las mismas credenciales y devuelve `accessToken`, `refreshToken`, `tokenType` y `expiresIn` (900 segundos).
 - `POST /auth/refresh`: recibe `{ "refreshToken" }` y devuelve un nuevo par. El token anterior deja de ser válido; la sesión caduca 30 días después del inicio de sesión.
 - `GET /auth/me`: devuelve el usuario autenticado.

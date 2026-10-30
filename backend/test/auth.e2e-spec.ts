@@ -18,12 +18,12 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)('authentication with PostgreSQL'
 
   it('registers, authenticates, rotates tokens and revokes the session', async () => {
     const credentials = { email: `${randomUUID()}@example.com`, password: 'a-long-test-password' };
-    await request(app.getHttpServer()).post('/auth/register').send(credentials).expect(201);
+    await request(app.getHttpServer()).post('/auth/register').send({ ...credentials, name: '  Ana  ' }).expect(201).expect(({ body }) => { expect(body.name).toBe('Ana'); });
     await request(app.getHttpServer()).post('/auth/login').send({ ...credentials, password: 'wrong-password' }).expect(401);
     const login = await request(app.getHttpServer()).post('/auth/login').send(credentials).expect(200);
     const access = login.body.accessToken as string;
     const refresh = login.body.refreshToken as string;
-    await request(app.getHttpServer()).get('/auth/me').auth(access, { type: 'bearer' }).expect(200);
+    await request(app.getHttpServer()).get('/auth/me').auth(access, { type: 'bearer' }).expect(200).expect(({ body }) => { expect(body.name).toBe('Ana'); });
     const rotated = await request(app.getHttpServer()).post('/auth/refresh').send({ refreshToken: refresh }).expect(200);
     await request(app.getHttpServer()).post('/auth/refresh').send({ refreshToken: refresh }).expect(401);
     await request(app.getHttpServer()).post('/auth/logout').auth(rotated.body.accessToken, { type: 'bearer' }).expect(204);
@@ -33,7 +33,7 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)('authentication with PostgreSQL'
 
   it('changes passwords and revokes existing sessions', async () => {
     const credentials = { email: `${randomUUID()}@example.com`, password: 'a-long-test-password' };
-    await request(app.getHttpServer()).post('/auth/register').send(credentials).expect(201);
+    await request(app.getHttpServer()).post('/auth/register').send({ ...credentials, name: 'Ana' }).expect(201);
     const login = await request(app.getHttpServer()).post('/auth/login').send(credentials).expect(200);
     await request(app.getHttpServer()).post('/auth/change-password')
       .auth(login.body.accessToken, { type: 'bearer' })

@@ -2,9 +2,9 @@ import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/c
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service.js';
-import { ChangePasswordDto, CredentialsDto, RefreshDto } from './auth.dto.js';
+import { ChangePasswordDto, CredentialsDto, RefreshDto, RegisterDto } from './auth.dto.js';
 
-type AuthenticatedRequest = { user: { id: string; email: string; sessionId: string } };
+type AuthenticatedRequest = { user: { id: string; email: string; name: string | null; sessionId: string } };
 
 @Controller('auth')
 export class AuthController {
@@ -12,7 +12,7 @@ export class AuthController {
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('register')
-  register(@Body() input: CredentialsDto) { return this.auth.register(input); }
+  register(@Body() input: RegisterDto) { return this.auth.register(input); }
 
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(200)
@@ -26,7 +26,7 @@ export class AuthController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('me')
-  me(@Req() request: AuthenticatedRequest) { return { id: request.user.id, email: request.user.email }; }
+  me(@Req() request: AuthenticatedRequest) { return { id: request.user.id, email: request.user.email, name: request.user.name }; }
 
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(204)

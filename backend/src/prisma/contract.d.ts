@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'fb8093903576f072c5bce7129038e93245e5091d3081aefa1ea9407530fc7c39'>;
+  StorageHashBase<'314de7a79e2a12b8661fa442983df9841d909ec4de14617c5dd5a4b95672b279'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -312,6 +312,7 @@ export namespace Models {
   export type public_User = {
     email: FieldOutputTypes['public']['User']['email'];
     id: FieldOutputTypes['public']['User']['id'];
+    name: FieldOutputTypes['public']['User']['name'];
     passwordHash: FieldOutputTypes['public']['User']['passwordHash'];
     sessions: public_AuthSession[];
     readonly [RelationKeys]?: 'sessions';
@@ -409,6 +410,12 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly passwordHash: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -493,6 +500,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly name: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly passwordHash: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -517,6 +528,7 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly email: { readonly column: 'email' };
                 readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
                 readonly passwordHash: { readonly column: 'passwordHash' };
               };
             };

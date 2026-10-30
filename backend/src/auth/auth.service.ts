@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { createHash, randomBytes, randomUUID, scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
 import { PrismaService } from '../prisma/prisma.service.js';
-import type { CredentialsDto } from './auth.dto.js';
+import type { CredentialsDto, RegisterDto } from './auth.dto.js';
 
 const scrypt = promisify(scryptCallback);
 const hashToken = (token: string) => createHash('sha256').update(token).digest('hex');
@@ -18,12 +18,12 @@ async function passwordHash(password: string, salt = randomBytes(16).toString('h
 export class AuthService {
   constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
 
-  async register(input: CredentialsDto) {
+  async register(input: RegisterDto) {
     const email = input.email.trim().toLowerCase();
     const encoded = await passwordHash(input.password);
     try {
-      const user = await this.prisma.db.orm.public.User.create({ id: randomUUID(), email, passwordHash: encoded });
-      return { id: user.id, email: user.email };
+      const user = await this.prisma.db.orm.public.User.create({ id: randomUUID(), email, name: input.name.trim(), passwordHash: encoded });
+      return { id: user.id, email: user.email, name: user.name };
     } catch (error) {
       if ((error as { sqlState?: string }).sqlState === '23505') throw new ConflictException('Email is already registered');
       throw error;
@@ -86,7 +86,7 @@ export class AuthService {
     if (!session || Date.parse(session.expiresAt) <= Date.now()) throw new UnauthorizedException();
     const user = await this.prisma.db.orm.public.User.where({ id: userId }).first();
     if (!user) throw new UnauthorizedException();
-    return { id: user.id, email: user.email, sessionId };
+    return { id: user.id, email: user.email, name: user.name, sessionId };
   }
 
   private async tokens(userId: string, sessionId: string, refreshToken: string) {

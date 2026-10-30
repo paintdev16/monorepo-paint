@@ -1,4 +1,5 @@
 import { IsEmail, IsString, Length, MaxLength } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class CredentialsDto {
   @IsEmail()
@@ -8,6 +9,13 @@ export class CredentialsDto {
   @IsString()
   @Length(12, 256)
   password!: string;
+}
+
+export class RegisterDto extends CredentialsDto {
+  @Transform(({ value }: { value: unknown }) => typeof value === 'string' ? value.trim() : value)
+  @IsString()
+  @Length(1, 100)
+  name!: string;
 }
 
 export class RefreshDto {
