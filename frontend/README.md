@@ -1,5 +1,11 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Autenticación local
+
+El frontend se ejecuta en `http://localhost:3001` con `pnpm dev`. Por defecto se conecta al backend en `http://localhost:3000`; para cambiarlo, copia `.env.example` a `.env.local` y modifica `AUTH_API_URL`. Esta dirección se utiliza en el servidor de Next.js, por lo que debe ser accesible desde él.
+
+Configura y arranca el backend con PostgreSQL y `JWT_SECRET` siguiendo su README. La página principal enlaza a registro e inicio de sesión; ambos llevan al dashboard. Los tokens se guardan en cookies HttpOnly y el servidor del frontend los renueva cuando corresponde. Para producción sirve el frontend por HTTPS. El límite por IP del backend verá la dirección del servidor frontend al usar este intermediario; configura un límite por cliente en el proxy de entrada antes de exponerlo públicamente.
+
 ## Getting Started
 
 First, run the development server:
