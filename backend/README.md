@@ -124,3 +124,27 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Prisma 8 y PostgreSQL
+
+Este proyecto usa Prisma ORM 8 (release candidate) y PostgreSQL 15 o superior. Usa Node.js 22.18+, 24.11+ o 26+; se recomienda Node.js 24. Copia `.env.example` a `.env` y configura `DATABASE_URL` con las credenciales de tu base de datos. No incluyas `.env` en el repositorio.
+
+Los modelos se definen en `src/prisma/contract.prisma`. Después de cada cambio, ejecuta `pnpm prisma:emit` y versiona los archivos generados `contract.json` y `contract.d.ts`.
+
+Para una base de datos nueva y vacía, ejecuta `pnpm prisma:db:init` después de definir y emitir los modelos. Para cambios posteriores, ejecuta `pnpm prisma:migration:plan --name nombre_del_cambio`, revisa los archivos en `migrations/` y aplica la migración con `pnpm prisma:migrate`. Versiona el directorio `migrations/`. Para comprobar el estado de la base, usa `pnpm prisma:verify`. `pnpm prisma:db:update` también permite actualizar una base de desarrollo directamente; revisa cuidadosamente cualquier cambio que elimine datos.
+
+Inyecta `PrismaService` desde `src/prisma/prisma.service.ts` en tus servicios de NestJS y consulta los modelos mediante `prisma.db.orm.public`. El cliente se crea al primer uso y cierra sus conexiones al detener la aplicación. Prisma 8 todavía es una versión candidata y algunas funcionalidades no están disponibles: consulta su [estado oficial](https://www.prisma.io/docs/orm/release-status).
+
+## Autenticación
+
+Configura `JWT_SECRET` en `.env` con un secreto aleatorio de al menos 32 bytes (por ejemplo, genera uno con `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`). El servidor no inicia si falta. Aplica el contrato a PostgreSQL antes de usar la API; se incluye una migración inicial en `migrations/`.
+
+- `POST /auth/register`: `{ "email", "password" }`, registra un usuario; contraseña de 12 a 256 caracteres.
+- `POST /auth/login`: recibe las mismas credenciales y devuelve `accessToken`, `refreshToken`, `tokenType` y `expiresIn` (900 segundos).
+- `POST /auth/refresh`: recibe `{ "refreshToken" }` y devuelve un nuevo par. El token anterior deja de ser válido; la sesión caduca 30 días después del inicio de sesión.
+- `GET /auth/me`: devuelve el usuario autenticado.
+- `POST /auth/logout` y `POST /auth/logout-all`: cierran la sesión actual o todas las sesiones.
+- `POST /auth/change-password`: recibe `{ "currentPassword", "newPassword" }`, cambia la contraseña y cierra todas las sesiones.
+
+Los tres últimos grupos requieren `Authorization: Bearer <accessToken>`. Los clientes móviles deben guardar los tokens en almacenamiento seguro, transmitirlos únicamente por HTTPS y sustituir ambos tokens después de cada renovación. Las contraseñas se almacenan con scrypt y los tokens de renovación como hashes. El límite de solicitudes es por IP y se mantiene en memoria por instancia; para despliegues con varias instancias se necesita almacenamiento compartido y configurar correctamente el proxy de confianza. La verificación de correo y la recuperación de contraseña no están implementadas: requieren un proveedor de correo y un flujo de enlaces configurados.
+
+Para probar la autenticación con una base de datos de prueba ya inicializada, define `TEST_DATABASE_URL` y ejecuta `pnpm test:e2e`. Usa una base exclusiva para pruebas: el test crea usuarios y sesiones.

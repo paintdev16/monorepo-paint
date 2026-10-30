@@ -1,0 +1,18 @@
+// use prisma-8
+
+model User {
+  id           String @id
+  email        String @unique
+  passwordHash String
+  sessions     AuthSession[]
+}
+
+model AuthSession {
+  id        String @id
+  userId    String
+  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String
+  expiresAt String
+
+  @@index([userId])
+}
