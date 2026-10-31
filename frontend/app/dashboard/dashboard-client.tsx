@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 
 type User = { id: string; email: string; name: string | null };
 let sessionRequest: Promise<Response> | null = null;
@@ -11,7 +15,10 @@ function getSession() {
     const request = () => fetch("/api/auth/session", { method: "POST" });
     // Serialize token rotation across tabs when Web Locks is available.
     const pending = navigator.locks
-      ? navigator.locks.request("paint-session", request) as unknown as Promise<Response>
+      ? (navigator.locks.request(
+          "paint-session",
+          request,
+        ) as unknown as Promise<Response>)
       : request();
     sessionRequest = pending.finally(() => {
       sessionRequest = null;
@@ -20,10 +27,20 @@ function getSession() {
   return sessionRequest.then((response) => response.clone());
 }
 
-export default function Dashboard({ initialUser, initialError = false }: { initialUser: User | null; initialError?: boolean }) {
+export default function Dashboard({
+  initialUser,
+  initialError = false,
+}: {
+  initialUser: User | null;
+  initialError?: boolean;
+}) {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(initialUser);
-  const [error, setError] = useState(initialError ? "No pudimos verificar tu sesión. Recarga la página para intentarlo de nuevo." : "");
+  const [error, setError] = useState(
+    initialError
+      ? "No pudimos verificar tu sesión. Recarga la página para intentarlo de nuevo."
+      : "",
+  );
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (initialUser || initialError) return;
@@ -64,7 +81,13 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
   if (!user)
     return (
       <main className="loading-screen">
-        {error ? <p role="alert">{error}</p> : <p>Preparando tu espacio…</p>}
+        {error ? (
+          <Alert variant="destructive" className="form-error">
+            {error}
+          </Alert>
+        ) : (
+          <p>Preparando tu espacio…</p>
+        )}
       </main>
     );
   const name = user.name || user.email.split("@")[0];
@@ -76,11 +99,20 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
           <span className="brand-dot">.</span>
         </Link>
         <div className="dashboard-nav">
-          <span className="account-dot">{name.charAt(0).toUpperCase()}</span>
+          <Avatar className="account-dot">
+            <AvatarFallback className="account-dot">
+              {name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
           <span className="account-email">{user.email}</span>
-          <button className="logout" onClick={logout} disabled={busy}>
+          <Button
+            variant="ghost"
+            className="logout"
+            onClick={logout}
+            disabled={busy}
+          >
             {busy ? "Cerrando…" : "Cerrar sesión"} ↗
-          </button>
+          </Button>
         </div>
       </header>
       <section className="dashboard-content wrap">
@@ -97,12 +129,12 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
           <span className="heading-star">✳</span>
         </div>
         {error && (
-          <p className="form-error" role="alert">
+          <Alert variant="destructive" className="form-error">
             {error}
-          </p>
+          </Alert>
         )}
         <div className="dashboard-grid">
-          <article className="welcome-card">
+          <Card className="welcome-card">
             <div className="card-top">
               <span>UN NUEVO COMIENZO</span>
               <span>✳</span>
@@ -126,9 +158,9 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
             <div className="card-bottom">
               TU ESPACIO, TUS REGLAS <span>↗</span>
             </div>
-          </article>
+          </Card>
           <div className="side-cards">
-            <article className="side-card account-card">
+            <Card className="side-card account-card">
               <div className="card-top">
                 <span>01 / TU CUENTA</span>
                 <span>↗</span>
@@ -139,8 +171,8 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
                 <p>Has iniciado sesión como</p>
                 <strong>{user.email}</strong>
               </div>
-            </article>
-            <article className="side-card little-card">
+            </Card>
+            <Card className="side-card little-card">
               <div className="card-top">
                 <span>02 / PARA RECORDAR</span>
                 <span>✳</span>
@@ -149,7 +181,7 @@ export default function Dashboard({ initialUser, initialError = false }: { initi
                 Las mejores ideas no tienen que ser perfectas, solo tienen que
                 empezar.
               </p>
-            </article>
+            </Card>
           </div>
         </div>
         <div className="dashboard-end">

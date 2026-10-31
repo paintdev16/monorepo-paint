@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -12,9 +13,9 @@ export default function Home() {
           <Link className="nav-login" href="/login">
             Iniciar sesión
           </Link>
-          <Link className="button button-dark button-small" href="/register">
+          <Button render={<Link href="/register" />} nativeButton={false} className="button button-dark button-small">
             Crear cuenta <span>↗</span>
-          </Link>
+          </Button>
         </nav>
       </header>
       <section className="hero wrap">
@@ -32,9 +33,9 @@ export default function Home() {
             dale forma a lo que imaginas.
           </p>
           <div className="hero-actions">
-            <Link className="button button-dark" href="/register">
+            <Button render={<Link href="/register" />} nativeButton={false} className="button button-dark">
               Comenzar ahora <span>↗</span>
-            </Link>
+            </Button>
             <Link className="text-link" href="/login">
               Ya tengo una cuenta <span>→</span>
             </Link>

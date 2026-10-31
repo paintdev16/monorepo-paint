@@ -3,6 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert } from "@/components/ui/alert";
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const register = mode === "register";
@@ -83,9 +87,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               : "Entra a tu espacio y continúa donde lo dejaste."}
           </p>
           <form onSubmit={submit} className="auth-form">
-            {register && <><label htmlFor="name">Nombre</label><input id="name" name="name" type="text" autoComplete="name" placeholder="Tu nombre" required maxLength={100} /></>}
-            <label htmlFor="email">Correo electrónico</label>
-            <input
+            {register && <><Label htmlFor="name">Nombre</Label><Input id="name" name="name" type="text" autoComplete="name" placeholder="Tu nombre" required maxLength={100} /></>}
+            <Label htmlFor="email">Correo electrónico</Label>
+            <Input
               id="email"
               name="email"
               type="email"
@@ -94,9 +98,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               required
               maxLength={254}
             />
-            <label htmlFor="password">Contraseña</label>
+            <Label htmlFor="password">Contraseña</Label>
             <div className="password-field">
-              <input
+              <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
@@ -106,7 +110,8 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 maxLength={256}
                 required
               />
-              <button
+              <Button
+                variant="ghost"
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={
@@ -114,12 +119,12 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 }
               >
                 {showPassword ? "Ocultar" : "Mostrar"}
-              </button>
+              </Button>
             </div>
             {register && (
               <>
-                <label htmlFor="confirmPassword">Confirma tu contraseña</label>
-                <input
+                <Label htmlFor="confirmPassword">Confirma tu contraseña</Label>
+                <Input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showPassword ? "text" : "password"}
@@ -133,11 +138,11 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
               </>
             )}
             {error && (
-              <p className="form-error" role="alert">
+              <Alert variant="destructive" className="form-error">
                 {error}
-              </p>
+              </Alert>
             )}
-            <button
+            <Button
               className="button button-dark submit-button"
               disabled={loading}
               type="submit"
@@ -148,7 +153,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                   ? "Crear mi cuenta"
                   : "Iniciar sesión"}{" "}
               <span>↗</span>
-            </button>
+            </Button>
           </form>
           <p className="auth-switch">
             {register ? "¿Ya tienes una cuenta?" : "¿Aún no tienes una cuenta?"}{" "}
