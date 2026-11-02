@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'314de7a79e2a12b8661fa442983df9841d909ec4de14617c5dd5a4b95672b279'>;
+  StorageHashBase<'47e37d55f177da50a82b669f5f6eed155208401d181dd97fd42fac7d95188b2d'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -303,11 +303,29 @@ export type StorageColumnInputTypes = ColumnTypesFromStorage<
 export namespace Models {
   export type public_AuthSession = {
     expiresAt: FieldOutputTypes['public']['AuthSession']['expiresAt'];
+    familyId: FieldOutputTypes['public']['AuthSession']['familyId'];
     id: FieldOutputTypes['public']['AuthSession']['id'];
+    revocationReason: FieldOutputTypes['public']['AuthSession']['revocationReason'];
+    revokedAt: FieldOutputTypes['public']['AuthSession']['revokedAt'];
     tokenHash: FieldOutputTypes['public']['AuthSession']['tokenHash'];
     userId: FieldOutputTypes['public']['AuthSession']['userId'];
+    usedTokens: public_UsedRefreshToken[];
     user: public_User;
-    readonly [RelationKeys]?: 'user';
+    readonly [RelationKeys]?: 'usedTokens' | 'user';
+  };
+  export type public_LoginAttempt = {
+    accountKey: FieldOutputTypes['public']['LoginAttempt']['accountKey'];
+    failedAttempts: FieldOutputTypes['public']['LoginAttempt']['failedAttempts'];
+    lastFailedAt: FieldOutputTypes['public']['LoginAttempt']['lastFailedAt'];
+    lockedUntil: FieldOutputTypes['public']['LoginAttempt']['lockedUntil'];
+    readonly [RelationKeys]?: never;
+  };
+  export type public_UsedRefreshToken = {
+    id: FieldOutputTypes['public']['UsedRefreshToken']['id'];
+    sessionId: FieldOutputTypes['public']['UsedRefreshToken']['sessionId'];
+    tokenHash: FieldOutputTypes['public']['UsedRefreshToken']['tokenHash'];
+    session: public_AuthSession;
+    readonly [RelationKeys]?: 'session';
   };
   export type public_User = {
     email: FieldOutputTypes['public']['User']['email'];
@@ -322,6 +340,8 @@ export namespace Models {
 export declare const models: {
   public: {
     AuthSession: Models.public_AuthSession;
+    LoginAttempt: Models.public_LoginAttempt;
+    UsedRefreshToken: Models.public_UsedRefreshToken;
     User: Models.public_User;
   };
 };
@@ -352,10 +372,28 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly familyId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
                 readonly id: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly revocationReason: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly revokedAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
                   readonly many: false;
                 };
                 readonly tokenHash: {
@@ -375,6 +413,12 @@ type ContractBase = Omit<
               uniques: readonly [];
               indexes: readonly [
                 {
+                  readonly name: 'AuthSession_familyId_idx_3d03045e';
+                  readonly prefix: 'AuthSession_familyId_idx';
+                  readonly columns: readonly ['familyId'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'AuthSession_userId_idx_a489d58a';
                   readonly prefix: 'AuthSession_userId_idx';
                   readonly columns: readonly ['userId'];
@@ -391,6 +435,91 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'public' & NamespaceId;
                     readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly LoginAttempt: {
+              columns: {
+                readonly accountKey: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly failedAttempts: {
+                  readonly dataType: 'pg/int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly lastFailedAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly lockedUntil: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['accountKey'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'LoginAttempt_lastFailedAt_idx_a58cb70e';
+                  readonly prefix: 'LoginAttempt_lastFailedAt_idx';
+                  readonly columns: readonly ['lastFailedAt'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
+            readonly UsedRefreshToken: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly sessionId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly tokenHash: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['tokenHash'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'UsedRefreshToken_sessionId_idx_29f415d4';
+                  readonly prefix: 'UsedRefreshToken_sessionId_idx';
+                  readonly columns: readonly ['sessionId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UsedRefreshToken';
+                    readonly columns: readonly ['sessionId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'AuthSession';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -443,6 +572,14 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'AuthSession';
     };
+    readonly LoginAttempt: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'LoginAttempt';
+    };
+    readonly UsedRefreshToken: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'UsedRefreshToken';
+    };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
   };
   readonly domain: {
@@ -455,8 +592,20 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly familyId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly id: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly revocationReason: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly revokedAt: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly tokenHash: {
@@ -469,6 +618,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly usedTokens: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'UsedRefreshToken';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['sessionId'];
+                };
+              };
               readonly user: {
                 readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
                 readonly cardinality: 'N:1';
@@ -484,9 +644,82 @@ type ContractBase = Omit<
               readonly namespaceId: 'public';
               readonly fields: {
                 readonly expiresAt: { readonly column: 'expiresAt' };
+                readonly familyId: { readonly column: 'familyId' };
                 readonly id: { readonly column: 'id' };
+                readonly revocationReason: { readonly column: 'revocationReason' };
+                readonly revokedAt: { readonly column: 'revokedAt' };
                 readonly tokenHash: { readonly column: 'tokenHash' };
                 readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly LoginAttempt: {
+            readonly fields: {
+              readonly accountKey: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly failedAttempts: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly lastFailedAt: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly lockedUntil: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'LoginAttempt';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly accountKey: { readonly column: 'accountKey' };
+                readonly failedAttempts: { readonly column: 'failedAttempts' };
+                readonly lastFailedAt: { readonly column: 'lastFailedAt' };
+                readonly lockedUntil: { readonly column: 'lockedUntil' };
+              };
+            };
+          };
+          readonly UsedRefreshToken: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sessionId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly tokenHash: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly session: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'AuthSession';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['sessionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'UsedRefreshToken';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly sessionId: { readonly column: 'sessionId' };
+                readonly tokenHash: { readonly column: 'tokenHash' };
               };
             };
           };

@@ -14,6 +14,29 @@ model AuthSession {
   user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
   tokenHash String
   expiresAt String
+  familyId  String?
+  revokedAt String?
+  revocationReason String?
+  usedTokens UsedRefreshToken[]
 
   @@index([userId])
+  @@index([familyId])
+}
+
+model UsedRefreshToken {
+  id String @id
+  sessionId String
+  session AuthSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+
+  @@index([sessionId])
+}
+
+model LoginAttempt {
+  accountKey String @id
+  failedAttempts Int
+  lastFailedAt String?
+  lockedUntil String?
+
+  @@index([lastFailedAt])
 }

@@ -1,0 +1,427 @@
+[
+  {
+    "id": "table.UsedRefreshToken",
+    "label": "Create table \"UsedRefreshToken\"",
+    "summary": "Creates table \"UsedRefreshToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "UsedRefreshToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"UsedRefreshToken\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsedRefreshToken\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"UsedRefreshToken\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"UsedRefreshToken\"",
+        "sql": "CREATE TABLE \"public\".\"UsedRefreshToken\" (\n  \"id\" text NOT NULL,\n  \"sessionId\" text NOT NULL,\n  \"tokenHash\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"UsedRefreshToken\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"UsedRefreshToken\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"UsedRefreshToken\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuthSession.familyId",
+    "label": "Add column \"familyId\" to \"AuthSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "familyId",
+        "table": "AuthSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"familyId\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "familyId"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"familyId\" on \"AuthSession\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"familyId\"",
+        "sql": "ALTER TABLE \"public\".\"AuthSession\" ADD COLUMN \"familyId\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"familyId\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "familyId"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"familyId\" on \"AuthSession\""
+        }
+      },
+      {
+        "description": "verify column \"familyId\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "familyId",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuthSession.revocationReason",
+    "label": "Add column \"revocationReason\" to \"AuthSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "revocationReason",
+        "table": "AuthSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"revocationReason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revocationReason"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"revocationReason\" on \"AuthSession\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"revocationReason\"",
+        "sql": "ALTER TABLE \"public\".\"AuthSession\" ADD COLUMN \"revocationReason\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"revocationReason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revocationReason"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"revocationReason\" on \"AuthSession\""
+        }
+      },
+      {
+        "description": "verify column \"revocationReason\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revocationReason",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.AuthSession.revokedAt",
+    "label": "Add column \"revokedAt\" to \"AuthSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "revokedAt",
+        "table": "AuthSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"revokedAt\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revokedAt"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"revokedAt\" on \"AuthSession\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"revokedAt\"",
+        "sql": "ALTER TABLE \"public\".\"AuthSession\" ADD COLUMN \"revokedAt\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"revokedAt\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revokedAt"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"revokedAt\" on \"AuthSession\""
+        }
+      },
+      {
+        "description": "verify column \"revokedAt\" has type \"text\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "AuthSession",
+          "revokedAt",
+          "text"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.UsedRefreshToken.UsedRefreshToken_tokenHash_key",
+    "label": "Add unique constraint on \"UsedRefreshToken\" (tokenHash)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "UsedRefreshToken_tokenHash_key",
+        "table": "UsedRefreshToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"UsedRefreshToken_tokenHash_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsedRefreshToken_tokenHash_key",
+          "public",
+          "\"public\".\"UsedRefreshToken\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"UsedRefreshToken_tokenHash_key\" on \"UsedRefreshToken\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"UsedRefreshToken_tokenHash_key\"",
+        "sql": "ALTER TABLE \"public\".\"UsedRefreshToken\" ADD CONSTRAINT \"UsedRefreshToken_tokenHash_key\" UNIQUE (\"tokenHash\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"UsedRefreshToken_tokenHash_key\" exists on (tokenHash)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "UsedRefreshToken_tokenHash_key",
+          "public",
+          "\"public\".\"UsedRefreshToken\"",
+          "u",
+          "[\"tokenHash\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.AuthSession.AuthSession_familyId_idx_3d03045e",
+    "label": "Create index \"AuthSession_familyId_idx_3d03045e\" on \"AuthSession\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "AuthSession_familyId_idx_3d03045e",
+        "table": "AuthSession"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"AuthSession_familyId_idx_3d03045e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"AuthSession_familyId_idx_3d03045e\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"AuthSession_familyId_idx_3d03045e\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"AuthSession_familyId_idx_3d03045e\"",
+        "sql": "CREATE INDEX \"AuthSession_familyId_idx_3d03045e\" ON \"public\".\"AuthSession\" (\"familyId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"AuthSession_familyId_idx_3d03045e\" exists on \"AuthSession\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"AuthSession_familyId_idx_3d03045e\"",
+          "i",
+          "I",
+          "\"public\".\"AuthSession\"",
+          "btree",
+          "[\"familyId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UsedRefreshToken.UsedRefreshToken_sessionId_idx_29f415d4",
+    "label": "Create index \"UsedRefreshToken_sessionId_idx_29f415d4\" on \"UsedRefreshToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UsedRefreshToken_sessionId_idx_29f415d4",
+        "table": "UsedRefreshToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UsedRefreshToken_sessionId_idx_29f415d4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UsedRefreshToken_sessionId_idx_29f415d4\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"UsedRefreshToken_sessionId_idx_29f415d4\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UsedRefreshToken_sessionId_idx_29f415d4\"",
+        "sql": "CREATE INDEX \"UsedRefreshToken_sessionId_idx_29f415d4\" ON \"public\".\"UsedRefreshToken\" (\"sessionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UsedRefreshToken_sessionId_idx_29f415d4\" exists on \"UsedRefreshToken\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"UsedRefreshToken_sessionId_idx_29f415d4\"",
+          "i",
+          "I",
+          "\"public\".\"UsedRefreshToken\"",
+          "btree",
+          "[\"sessionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UsedRefreshToken.UsedRefreshToken_sessionId_fkey",
+    "label": "Add foreign key \"UsedRefreshToken_sessionId_fkey\" on \"UsedRefreshToken\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UsedRefreshToken_sessionId_fkey",
+        "table": "UsedRefreshToken"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UsedRefreshToken_sessionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UsedRefreshToken_sessionId_fkey",
+          "public",
+          "\"public\".\"UsedRefreshToken\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"UsedRefreshToken_sessionId_fkey\" on \"UsedRefreshToken\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UsedRefreshToken_sessionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UsedRefreshToken\"\nADD CONSTRAINT \"UsedRefreshToken_sessionId_fkey\"\nFOREIGN KEY (\"sessionId\")\nREFERENCES \"public\".\"AuthSession\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UsedRefreshToken_sessionId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "UsedRefreshToken_sessionId_fkey",
+          "public",
+          "\"public\".\"UsedRefreshToken\"",
+          "f",
+          "[\"sessionId\"]",
+          "\"public\".\"AuthSession\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  }
+]

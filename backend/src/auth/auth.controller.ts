@@ -1,8 +1,10 @@
-import { Body, Controller, Get, HttpCode, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service.js';
 import { ChangePasswordDto, CredentialsDto, RefreshDto, RegisterDto } from './auth.dto.js';
+import { LoginBlockedException } from './login-throttle.js';
 
 type AuthenticatedRequest = { user: { id: string; email: string; name: string | null; sessionId: string } };
 
@@ -17,7 +19,14 @@ export class AuthController {
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @HttpCode(200)
   @Post('login')
-  login(@Body() input: CredentialsDto) { return this.auth.login(input); }
+  async login(@Body() input: CredentialsDto, @Res({ passthrough: true }) response: Response) {
+    try {
+      return await this.auth.login(input);
+    } catch (error) {
+      if (error instanceof LoginBlockedException) response.setHeader('Retry-After', error.retryAfterSeconds);
+      throw error;
+    }
+  }
 
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @HttpCode(200)

@@ -8,6 +8,14 @@
       "model": "AuthSession",
       "namespace": "public"
     },
+    "LoginAttempt": {
+      "model": "LoginAttempt",
+      "namespace": "public"
+    },
+    "UsedRefreshToken": {
+      "model": "UsedRefreshToken",
+      "namespace": "public"
+    },
     "User": {
       "model": "User",
       "namespace": "public"
@@ -26,8 +34,29 @@
                   "kind": "scalar"
                 }
               },
+              "familyId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "revocationReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "revokedAt": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/text@1",
                   "kind": "scalar"
@@ -49,6 +78,21 @@
               }
             },
             "relations": {
+              "usedTokens": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "sessionId"
+                  ]
+                },
+                "to": {
+                  "model": "UsedRefreshToken",
+                  "namespace": "public"
+                }
+              },
               "user": {
                 "cardinality": "N:1",
                 "nullable": false,
@@ -71,8 +115,17 @@
                 "expiresAt": {
                   "column": "expiresAt"
                 },
+                "familyId": {
+                  "column": "familyId"
+                },
                 "id": {
                   "column": "id"
+                },
+                "revocationReason": {
+                  "column": "revocationReason"
+                },
+                "revokedAt": {
+                  "column": "revokedAt"
                 },
                 "tokenHash": {
                   "column": "tokenHash"
@@ -83,6 +136,115 @@
               },
               "namespaceId": "public",
               "table": "AuthSession"
+            }
+          },
+          "LoginAttempt": {
+            "fields": {
+              "accountKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "failedAttempts": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "lastFailedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "lockedUntil": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "accountKey": {
+                  "column": "accountKey"
+                },
+                "failedAttempts": {
+                  "column": "failedAttempts"
+                },
+                "lastFailedAt": {
+                  "column": "lastFailedAt"
+                },
+                "lockedUntil": {
+                  "column": "lockedUntil"
+                }
+              },
+              "namespaceId": "public",
+              "table": "LoginAttempt"
+            }
+          },
+          "UsedRefreshToken": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sessionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "tokenHash": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "session": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "sessionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AuthSession",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "sessionId": {
+                  "column": "sessionId"
+                },
+                "tokenHash": {
+                  "column": "tokenHash"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UsedRefreshToken"
             }
           },
           "User": {
@@ -168,10 +330,25 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "familyId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
+                },
+                "revocationReason": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "revokedAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
                 },
                 "tokenHash": {
                   "codecId": "pg/text@1",
@@ -209,6 +386,14 @@
               "indexes": [
                 {
                   "columns": [
+                    "familyId"
+                  ],
+                  "name": "AuthSession_familyId_idx_3d03045e",
+                  "prefix": "AuthSession_familyId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
                     "userId"
                   ],
                   "name": "AuthSession_userId_idx_a489d58a",
@@ -222,6 +407,110 @@
                 ]
               },
               "uniques": []
+            },
+            "LoginAttempt": {
+              "columns": {
+                "accountKey": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "failedAttempts": {
+                  "codecId": "pg/int4@1",
+                  "dataType": "pg/int4",
+                  "nullable": false
+                },
+                "lastFailedAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "lockedUntil": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "lastFailedAt"
+                  ],
+                  "name": "LoginAttempt_lastFailedAt_idx_a58cb70e",
+                  "prefix": "LoginAttempt_lastFailedAt_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "accountKey"
+                ]
+              },
+              "uniques": []
+            },
+            "UsedRefreshToken": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "sessionId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "tokenHash": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "UsedRefreshToken_sessionId_idx_29f415d4"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "sessionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UsedRefreshToken"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "AuthSession"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "sessionId"
+                  ],
+                  "name": "UsedRefreshToken_sessionId_idx_29f415d4",
+                  "prefix": "UsedRefreshToken_sessionId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "tokenHash"
+                  ]
+                }
+              ]
             },
             "User": {
               "columns": {
@@ -267,7 +556,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "314de7a79e2a12b8661fa442983df9841d909ec4de14617c5dd5a4b95672b279"
+    "storageHash": "47e37d55f177da50a82b669f5f6eed155208401d181dd97fd42fac7d95188b2d"
   },
   "capabilities": {
     "postgres": {
