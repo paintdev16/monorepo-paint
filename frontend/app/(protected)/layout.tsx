@@ -3,11 +3,12 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { PermissionsProvider } from "@/components/access/permissions-provider";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   return (
     <Protected>{(user) => (
-      <TooltipProvider>
+      <PermissionsProvider><TooltipProvider>
         <SidebarProvider>
           <AppSidebar user={user} />
           <SidebarInset>
@@ -18,7 +19,7 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
             {children}
           </SidebarInset>
         </SidebarProvider>
-      </TooltipProvider>
+      </TooltipProvider></PermissionsProvider>
     )}</Protected>
   );
 }

@@ -45,14 +45,23 @@ export async function POST(request: Request, { params }: { params: Promise<{ act
   if (!origin || origin !== new URL(request.url).origin) return NextResponse.json({ message: 'Solicitud no permitida.' }, { status: 403 });
   const { action } = await params;
   try {
-    if (action === 'login' || action === 'register') {
+    if (action === 'login' || action === 'register' || action === 'setup') {
       const body = await request.json();
-      if (action === 'register') {
-        const registered = await authRequest('register', { method: 'POST', body: JSON.stringify(body) });
-        if (!registered.ok) return NextResponse.json({ message: registered.status === 409 ? 'Este correo ya está registrado.' : 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.' }, { status: registered.status });
+      if (action === 'register' || action === 'setup') {
+        const registered = await authRequest(action, { method: 'POST', body: JSON.stringify(body) });
+        if (!registered.ok) {
+          const details = await registered.json().catch(() => ({}));
+          const message = details.code === 'SETUP_ALREADY_COMPLETE' ? 'La configuración inicial ya se completó. Inicia sesión con tu cuenta.' : details.code === 'SETUP_REQUIRED' ? 'Primero debes completar la configuración inicial.' : action === 'setup' && registered.status === 503 ? 'El backend no está preparado para la configuración inicial. Ejecuta el seeder de roles e inténtalo de nuevo.' : registered.status === 409 ? 'Este correo ya está registrado.' : 'No se pudo crear la cuenta. Revisa los datos e inténtalo de nuevo.';
+          return NextResponse.json({ message, code: details.code }, { status: registered.status });
+        }
       }
-      const login = await authRequest('login', { method: 'POST', body: JSON.stringify({ email: body.email, password: body.password }) });
-      if (!login.ok) return NextResponse.json({ message: action === 'register' ? 'La cuenta se creó, pero no pudimos iniciar sesión. Inténtalo desde la página de acceso.' : login.status === 401 ? 'El correo o la contraseña son incorrectos.' : 'No se pudo iniciar sesión. Inténtalo de nuevo.' }, { status: login.status });
+      let login: Response;
+      try { login = await authRequest('login', { method: 'POST', body: JSON.stringify({ email: body.email, password: body.password }) }); }
+      catch {
+        if (action !== 'login') return NextResponse.json({ code: 'ACCOUNT_CREATED_LOGIN_FAILED', message: 'La cuenta se creó, pero no pudimos iniciar sesión. Inténtalo desde la página de acceso.' }, { status: 503 });
+        throw new Error('backend unavailable');
+      }
+      if (!login.ok) return NextResponse.json({ code: action !== 'login' ? 'ACCOUNT_CREATED_LOGIN_FAILED' : undefined, message: action !== 'login' ? 'La cuenta se creó, pero no pudimos iniciar sesión. Inténtalo desde la página de acceso.' : login.status === 401 ? 'El correo o la contraseña son incorrectos.' : 'No se pudo iniciar sesión. Inténtalo de nuevo.' }, { status: login.status });
       await saveTokens(await login.json());
       return NextResponse.json({ ok: true });
     }

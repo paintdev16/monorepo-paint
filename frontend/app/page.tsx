@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { SetupGate } from "@/components/auth/setup-gate";
 
-export default function Home() {
+function HomeContent() {
   return (
     <main className="min-h-svh bg-background text-foreground">
       <header className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between border-b px-5 sm:px-8 lg:px-12">
@@ -37,4 +38,8 @@ export default function Home() {
       <footer className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between border-t px-5 text-[10px] font-medium uppercase tracking-[.14em] text-muted-foreground sm:px-8 lg:px-12"><span>© Paint Studio</span><span className="hidden sm:inline">Un lugar para empezar &nbsp; ✳</span><span>Hecho con creatividad</span></footer>
     </main>
   );
+}
+
+export default function Home() {
+  return <SetupGate><HomeContent /></SetupGate>;
 }

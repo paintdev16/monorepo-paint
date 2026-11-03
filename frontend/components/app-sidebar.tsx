@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Check, ChevronsUpDown, House, LayoutDashboard, LogOut } from "lucide-react";
+import { Check, ChevronsUpDown, House, LayoutDashboard, LogOut, Users, Shield, KeyRound } from "lucide-react";
+import { usePermissions } from "@/components/access/permissions-provider";
 import { useLogout } from "@/app/ui/session-actions";
 import { Alert } from "@/components/ui/alert";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -22,6 +23,7 @@ export function AppSidebar({ user }: { user: SessionUser }) {
   const { isMobile, state, setOpenMobile } = useSidebar();
   const isCollapsed = !isMobile && state === "collapsed";
   const { logout, busy, error } = useLogout();
+  const { canAny, can } = usePermissions();
   const name = user.name || user.email.split("@")[0];
 
   return (
@@ -55,7 +57,13 @@ export function AppSidebar({ user }: { user: SessionUser }) {
           <SidebarMenuItem><SidebarMenuButton render={<Link href="/dashboard" />} isActive={pathname === "/dashboard"} tooltip="Panel" onClick={() => setOpenMobile(false)}><LayoutDashboard /><span>Panel</span></SidebarMenuButton></SidebarMenuItem>
           <SidebarMenuItem><SidebarMenuButton render={<Link href="/" />} tooltip="Inicio" onClick={() => setOpenMobile(false)}><House /><span>Inicio</span></SidebarMenuButton></SidebarMenuItem>
         </SidebarMenu></SidebarGroupContent>
-      </SidebarGroup></SidebarContent>
+      </SidebarGroup>
+      {canAny(["users.view", "roles.view", "permissions.view"]) && <SidebarGroup><SidebarGroupLabel>Administración</SidebarGroupLabel><SidebarGroupContent><SidebarMenu>
+        {can("users.view") && <SidebarMenuItem><SidebarMenuButton render={<Link href="/admin/users" />} isActive={pathname === "/admin/users"} tooltip="Usuarios" onClick={() => setOpenMobile(false)}><Users /><span>Usuarios</span></SidebarMenuButton></SidebarMenuItem>}
+        {can("roles.view") && <SidebarMenuItem><SidebarMenuButton render={<Link href="/admin/roles" />} isActive={pathname === "/admin/roles"} tooltip="Roles" onClick={() => setOpenMobile(false)}><Shield /><span>Roles</span></SidebarMenuButton></SidebarMenuItem>}
+        {can("permissions.view") && <SidebarMenuItem><SidebarMenuButton render={<Link href="/admin/permissions" />} isActive={pathname === "/admin/permissions"} tooltip="Permisos" onClick={() => setOpenMobile(false)}><KeyRound /><span>Permisos</span></SidebarMenuButton></SidebarMenuItem>}
+      </SidebarMenu></SidebarGroupContent></SidebarGroup>}
+      </SidebarContent>
 
       <SidebarFooter>
         <SidebarMenu><SidebarMenuItem>

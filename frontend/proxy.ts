@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
-  const publicPaths = new Set(["/", "/login", "/register"]);
+  const publicPaths = new Set(["/", "/login", "/register", "/setup"]);
   if (publicPaths.has(request.nextUrl.pathname)) return NextResponse.next();
 
   const access = request.cookies.get("paint_access")?.value;

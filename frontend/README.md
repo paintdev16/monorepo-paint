@@ -46,3 +46,10 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Administración de acceso
+
+Las rutas `/admin/users`, `/admin/roles` y `/admin/permissions` aparecen en el menú cuando el usuario dispone de los permisos de lectura correspondientes. Se conectan al backend configurado en `AUTH_API_URL` mediante rutas del servidor de Next.js; los tokens siguen en cookies HTTP-only. Las operaciones de escritura están reservadas al superadministrador por el backend.
+
+En Usuarios se consultan los roles y permisos efectivos y se sincronizan roles. En Roles se crean, editan y eliminan roles y se seleccionan permisos por recurso. En Permisos se consultan, filtran y administran las claves. El backend protege los elementos iniciales y rechaza eliminaciones de elementos en uso. La creación o edición de un rol y la sincronización de sus permisos son dos solicitudes: si falla la segunda, el diálogo indica que el rol ya fue guardado y permite reintentar.
+
+Cuando todavía no hay usuarios, la página inicial, el acceso y el registro redirigen a `/setup`. Allí se crea la primera cuenta con el rol `super_admin` y se inicia sesión. Cuando ya existe un usuario, `/setup` redirige al acceso. El backend debe estar disponible y tener aplicado el seeder de roles; consulta su README para los comandos de preparación. Si se crea la cuenta pero falla el inicio de sesión, utiliza el enlace para acceder con esas credenciales.

@@ -7,7 +7,7 @@ import { Alert } from "@/components/ui/alert";
 
 let sessionRequest: Promise<Response> | null = null;
 
-function renewSession() {
+export function renewSession() {
   if (!sessionRequest) {
     const request = () => fetch("/api/auth/session", { method: "POST" });
     const pending = navigator.locks
