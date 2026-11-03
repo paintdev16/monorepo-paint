@@ -41,11 +41,27 @@ describe.skipIf(!process.env.TEST_DATABASE_URL)('RBAC with PostgreSQL', () => {
   it('enforces JWT and permissions and reflects assignments and revocations immediately', async () => {
     await request(app.getHttpServer()).get('/roles').expect(401);
     await request(app.getHttpServer()).get('/roles').auth(userToken, { type: 'bearer' }).expect(403);
+    await request(app.getHttpServer()).get('/users').expect(401);
+    await request(app.getHttpServer()).get('/users').auth(userToken, { type: 'bearer' }).expect(403);
+    await request(app.getHttpServer()).get(`/users?search=${suffix}`).auth(token, { type: 'bearer' }).expect(200).expect(({ body }) => {
+      expect(body.total).toBe(2);
+      expect(body.data).toHaveLength(2);
+      expect(body.data[0]).not.toHaveProperty('passwordHash');
+      expect(body.data.find((user: { id: string }) => user.id === adminId).roles).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'super_admin' })]));
+    });
     const role = (await request(app.getHttpServer()).post('/roles').auth(token, { type: 'bearer' }).send({ name: `test_${suffix}` }).expect(201)).body;
     const all = (await request(app.getHttpServer()).get('/permissions?limit=100').auth(token, { type: 'bearer' }).expect(200)).body.data as { id: string; key: string }[];
     const permission = all.find((value) => value.key === 'roles.view')!;
     await request(app.getHttpServer()).put(`/roles/${role.id}/permissions`).auth(token, { type: 'bearer' }).send({ ids: [permission.id] }).expect(200);
     await request(app.getHttpServer()).put(`/users/${userId}/roles`).auth(token, { type: 'bearer' }).send({ ids: [role.id] }).expect(200);
+    await request(app.getHttpServer()).get(`/roles?search=${role.name}`).auth(token, { type: 'bearer' }).expect(200).expect(({ body }) => {
+      expect(body.total).toBe(1);
+      expect(body.data[0]).toMatchObject({ userCount: 1, permissionCount: 1 });
+    });
+    await request(app.getHttpServer()).get('/permissions?resource=roles').auth(token, { type: 'bearer' }).expect(200).expect(({ body }) => {
+      expect(body.data.every((entry: { key: string }) => entry.key.startsWith('roles.'))).toBe(true);
+      expect(body.data.find((entry: { id: string }) => entry.id === permission.id).roleCount).toBeGreaterThanOrEqual(1);
+    });
     await request(app.getHttpServer()).get('/roles').auth(userToken, { type: 'bearer' }).expect(200);
     await request(app.getHttpServer()).post('/roles').auth(userToken, { type: 'bearer' }).send({ name: 'escalated' }).expect(403);
     await request(app.getHttpServer()).put(`/roles/${role.id}/permissions`).auth(token, { type: 'bearer' }).send({ ids: [] }).expect(200);

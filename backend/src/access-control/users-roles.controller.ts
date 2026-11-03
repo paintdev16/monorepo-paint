@@ -1,7 +1,7 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Put, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdministrationService } from './administration.service.js';
-import { IdsDto } from './access.dto.js';
+import { IdsDto, PageDto } from './access.dto.js';
 import { AccessControlService } from './access-control.service.js';
 import { Permissions } from './permissions.decorator.js';
 import { PermissionsGuard } from './permissions.guard.js';
@@ -11,6 +11,8 @@ import { SuperAdminGuard } from './super-admin.guard.js';
 @UseGuards(AuthGuard('jwt'))
 export class UsersRolesController {
   constructor(private readonly admin: AdministrationService, private readonly access: AccessControlService) {}
+  @Get() @Permissions('users.view') @UseGuards(PermissionsGuard)
+  list(@Query() query: PageDto) { return this.admin.listUsers(query); }
   @Get(':id/roles') @Permissions('users.view') @UseGuards(PermissionsGuard)
   roles(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) { return this.admin.userRoles(id); }
   @Get(':id/permissions') @Permissions('users.view') @UseGuards(PermissionsGuard)

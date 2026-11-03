@@ -6,6 +6,9 @@ export class PageDto {
   @IsOptional() @Type(() => Number) @IsInt() @Min(1) @Max(100) limit = 20;
   @IsOptional() @IsString() @MaxLength(100) search?: string;
 }
+export class PermissionPageDto extends PageDto {
+  @IsOptional() @IsString() @MaxLength(63) @Matches(/^[a-z][a-z0-9_]*$/) resource?: string;
+}
 export class RoleCreateDto {
   @IsString() @Matches(/^[a-z][a-z0-9_]{0,63}$/) name: string;
   @IsOptional() @IsString() @MaxLength(500) description?: string;

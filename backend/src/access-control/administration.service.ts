@@ -1,8 +1,11 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
+import { or } from '@prisma/orm-postgres/orm-client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { SYSTEM_PERMISSIONS, SYSTEM_ROLES } from './access.constants.js';
-import type { PageDto, PermissionCreateDto, PermissionUpdateDto, RoleCreateDto, RoleUpdateDto } from './access.dto.js';
+import type { PageDto, PermissionPageDto, PermissionCreateDto, PermissionUpdateDto, RoleCreateDto, RoleUpdateDto } from './access.dto.js';
+
+const searchPattern = (value: string) => `%${value.replace(/[\\%_]/g, '\\$&')}%`;
 
 @Injectable()
 export class AdministrationService {
@@ -18,9 +21,12 @@ export class AdministrationService {
 
   async listRoles(query: PageDto) {
     let collection = this.prisma.db.orm.public.Role;
-    if (query.search) collection = collection.where((r) => r.name.ilike(`%${query.search}%`));
-    const data = await collection.orderBy((r) => r.name.asc()).limit(query.limit).offset((query.page - 1) * query.limit).all();
-    return { data, page: query.page, limit: query.limit };
+    if (query.search) collection = collection.where((r) => r.name.ilike(searchPattern(query.search!)));
+    const [{ total }, data] = await Promise.all([
+      collection.aggregate((a) => ({ total: a.count() })),
+      collection.include('users', (users) => users.count()).include('permissions', (permissions) => permissions.count()).orderBy((r) => r.name.asc()).limit(query.limit).offset((query.page - 1) * query.limit).all(),
+    ]);
+    return { data: data.map(({ users, permissions, ...role }) => ({ ...role, userCount: users, permissionCount: permissions })), page: query.page, limit: query.limit, total };
   }
   async role(id: string) {
     const role = await this.prisma.db.orm.public.Role.where({ id }).first();
@@ -61,11 +67,15 @@ export class AdministrationService {
       return { ids };
     });
   }
-  async listPermissions(query: PageDto) {
+  async listPermissions(query: PermissionPageDto) {
     let collection = this.prisma.db.orm.public.Permission;
-    if (query.search) collection = collection.where((p) => p.key.ilike(`%${query.search}%`));
-    const data = await collection.orderBy((p) => p.key.asc()).limit(query.limit).offset((query.page - 1) * query.limit).all();
-    return { data, page: query.page, limit: query.limit };
+    if (query.search) collection = collection.where((p) => p.key.ilike(searchPattern(query.search!)));
+    if (query.resource) collection = collection.where((p) => p.key.like(`${query.resource!.replace(/_/g, '\\_')}.%`));
+    const [{ total }, data] = await Promise.all([
+      collection.aggregate((a) => ({ total: a.count() })),
+      collection.include('roles', (roles) => roles.count()).orderBy((p) => p.key.asc()).limit(query.limit).offset((query.page - 1) * query.limit).all(),
+    ]);
+    return { data: data.map(({ roles, ...permission }) => ({ ...permission, roleCount: roles })), page: query.page, limit: query.limit, total };
   }
   async permission(id: string) {
     const db = this.prisma.db;
@@ -94,6 +104,15 @@ export class AdministrationService {
       if (await tx.orm.public.RolePermission.where({ permissionId: id }).first()) throw new ConflictException('Permission is assigned to roles');
       await tx.orm.public.Permission.where({ id }).delete();
     });
+  }
+  async listUsers(query: PageDto) {
+    let collection = this.prisma.db.orm.public.User;
+    if (query.search) collection = collection.where((user) => or(user.email.ilike(searchPattern(query.search!)), user.name.ilike(searchPattern(query.search!))));
+    const [{ total }, data] = await Promise.all([
+      collection.aggregate((a) => ({ total: a.count() })),
+      collection.select('id', 'email', 'name').include('roles', (roles) => roles.include('role', (role) => role.select('id', 'name', 'description'))).orderBy((user) => user.email.asc()).limit(query.limit).offset((query.page - 1) * query.limit).all(),
+    ]);
+    return { data: data.map((user) => ({ ...user, roles: user.roles.map((membership) => membership.role) })), page: query.page, limit: query.limit, total };
   }
   async userRoles(userId: string) {
     const db = this.prisma.db;

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AdministrationService } from './administration.service.js';
-import { PageDto, PermissionCreateDto, PermissionUpdateDto } from './access.dto.js';
+import { PermissionPageDto, PermissionCreateDto, PermissionUpdateDto } from './access.dto.js';
 import { Permissions } from './permissions.decorator.js';
 import { PermissionsGuard } from './permissions.guard.js';
 import { SuperAdminGuard } from './super-admin.guard.js';
@@ -11,7 +11,7 @@ import { SuperAdminGuard } from './super-admin.guard.js';
 export class PermissionsController {
   constructor(private readonly admin: AdministrationService) {}
   @Get() @Permissions('permissions.view') @UseGuards(PermissionsGuard)
-  list(@Query() query: PageDto) { return this.admin.listPermissions(query); }
+  list(@Query() query: PermissionPageDto) { return this.admin.listPermissions(query); }
   @Get(':id') @Permissions('permissions.view') @UseGuards(PermissionsGuard)
   get(@Param('id', new ParseUUIDPipe({ version: '4' })) id: string) { return this.admin.permission(id); }
   @Post() @UseGuards(SuperAdminGuard)
