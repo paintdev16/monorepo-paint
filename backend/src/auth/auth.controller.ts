@@ -12,6 +12,16 @@ type AuthenticatedRequest = { user: { id: string; email: string; name: string | 
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
+  @Get('setup')
+  setupStatus(@Res({ passthrough: true }) response: Response) {
+    response.setHeader('Cache-Control', 'no-store');
+    return this.auth.setupStatus();
+  }
+
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('setup')
+  setup(@Body() input: RegisterDto) { return this.auth.setup(input); }
+
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('register')
   register(@Body() input: RegisterDto) { return this.auth.register(input); }

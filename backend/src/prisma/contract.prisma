@@ -6,6 +6,48 @@ model User {
   name         String?
   passwordHash String
   sessions     AuthSession[]
+  roles        UserRole[]
+}
+
+model Role {
+  id String @id
+  name String @unique
+  description String?
+  createdAt String
+  updatedAt String
+  users UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id String @id
+  key String @unique
+  description String?
+  createdAt String
+  updatedAt String
+  roles RolePermission[]
+}
+
+model UserRole {
+  id String @id
+  userId String
+  roleId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([roleId])
+}
+
+model RolePermission {
+  id String @id
+  roleId String
+  permissionId String
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([permissionId])
 }
 
 model AuthSession {

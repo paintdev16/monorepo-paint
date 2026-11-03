@@ -25,7 +25,9 @@
     "prisma:db:update": "prisma db update",
     "prisma:migration:plan": "prisma migration plan",
     "prisma:migrate": "prisma db migrate",
-    "prisma:verify": "prisma db verify"
+    "prisma:verify": "prisma db verify",
+    "rbac:seed": "node scripts/rbac.mjs seed",
+    "rbac:bootstrap": "node scripts/rbac.mjs bootstrap"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.1",

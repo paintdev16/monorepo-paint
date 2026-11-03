@@ -4,6 +4,9 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { AccessControlModule } from './access-control/access-control.module.js';
+import { RolesModule } from './access-control/roles.module.js';
+import { PermissionsModule } from './access-control/permissions.module.js';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -13,6 +16,9 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
   imports: [
     PrismaModule,
     AuthModule,
+    AccessControlModule,
+    RolesModule,
+    PermissionsModule,
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 100 }]),
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com,

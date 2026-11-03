@@ -1,0 +1,790 @@
+[
+  {
+    "id": "table.Permission",
+    "label": "Create table \"Permission\"",
+    "summary": "Creates table \"Permission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Permission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Permission\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Permission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Permission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Permission\"",
+        "sql": "CREATE TABLE \"public\".\"Permission\" (\n  \"createdAt\" text NOT NULL,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"key\" text NOT NULL,\n  \"updatedAt\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Permission\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Permission\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Permission\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.Role",
+    "label": "Create table \"Role\"",
+    "summary": "Creates table \"Role\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "Role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"Role\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"Role\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"Role\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"Role\"",
+        "sql": "CREATE TABLE \"public\".\"Role\" (\n  \"createdAt\" text NOT NULL,\n  \"description\" text,\n  \"id\" text NOT NULL,\n  \"name\" text NOT NULL,\n  \"updatedAt\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"Role\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"Role\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"Role\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.RolePermission",
+    "label": "Create table \"RolePermission\"",
+    "summary": "Creates table \"RolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"RolePermission\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"RolePermission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"RolePermission\"",
+        "sql": "CREATE TABLE \"public\".\"RolePermission\" (\n  \"id\" text NOT NULL,\n  \"permissionId\" text NOT NULL,\n  \"roleId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"RolePermission\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"RolePermission\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "table.UserRole",
+    "label": "Create table \"UserRole\"",
+    "summary": "Creates table \"UserRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"UserRole\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "table \"UserRole\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"UserRole\"",
+        "sql": "CREATE TABLE \"public\".\"UserRole\" (\n  \"id\" text NOT NULL,\n  \"roleId\" text NOT NULL,\n  \"userId\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"UserRole\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3))) AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole\"",
+          "r",
+          "p"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "table \"UserRole\""
+        }
+      }
+    ]
+  },
+  {
+    "id": "unique.Permission.Permission_key_key",
+    "label": "Add unique constraint on \"Permission\" (key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Permission_key_key",
+        "table": "Permission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Permission_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Permission_key_key",
+          "public",
+          "\"public\".\"Permission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"Permission_key_key\" on \"Permission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Permission_key_key\"",
+        "sql": "ALTER TABLE \"public\".\"Permission\" ADD CONSTRAINT \"Permission_key_key\" UNIQUE (\"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"Permission_key_key\" exists on (key)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "Permission_key_key",
+          "public",
+          "\"public\".\"Permission\"",
+          "u",
+          "[\"key\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.Role.Role_name_key",
+    "label": "Add unique constraint on \"Role\" (name)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "Role_name_key",
+        "table": "Role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"Role_name_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "Role_name_key",
+          "public",
+          "\"public\".\"Role\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"Role_name_key\" on \"Role\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"Role_name_key\"",
+        "sql": "ALTER TABLE \"public\".\"Role\" ADD CONSTRAINT \"Role_name_key\" UNIQUE (\"name\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"Role_name_key\" exists on (name)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "Role_name_key",
+          "public",
+          "\"public\".\"Role\"",
+          "u",
+          "[\"name\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.RolePermission.RolePermission_roleId_permissionId_key",
+    "label": "Add unique constraint on \"RolePermission\" (roleId, permissionId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "RolePermission_roleId_permissionId_key",
+        "table": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"RolePermission_roleId_permissionId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RolePermission_roleId_permissionId_key",
+          "public",
+          "\"public\".\"RolePermission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"RolePermission_roleId_permissionId_key\" on \"RolePermission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"RolePermission_roleId_permissionId_key\"",
+        "sql": "ALTER TABLE \"public\".\"RolePermission\" ADD CONSTRAINT \"RolePermission_roleId_permissionId_key\" UNIQUE (\"roleId\", \"permissionId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"RolePermission_roleId_permissionId_key\" exists on (roleId, permissionId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "RolePermission_roleId_permissionId_key",
+          "public",
+          "\"public\".\"RolePermission\"",
+          "u",
+          "[\"roleId\",\"permissionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.UserRole.UserRole_userId_roleId_key",
+    "label": "Add unique constraint on \"UserRole\" (userId, roleId)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "UserRole_userId_roleId_key",
+        "table": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"UserRole_userId_roleId_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserRole_userId_roleId_key",
+          "public",
+          "\"public\".\"UserRole\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "constraint \"UserRole_userId_roleId_key\" on \"UserRole\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"UserRole_userId_roleId_key\"",
+        "sql": "ALTER TABLE \"public\".\"UserRole\" ADD CONSTRAINT \"UserRole_userId_roleId_key\" UNIQUE (\"userId\", \"roleId\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify unique constraint \"UserRole_userId_roleId_key\" exists on (userId, roleId)",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb)) AS \"result\"",
+        "params": [
+          "UserRole_userId_roleId_key",
+          "public",
+          "\"public\".\"UserRole\"",
+          "u",
+          "[\"userId\",\"roleId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.RolePermission.RolePermission_permissionId_idx_f46fcdf5",
+    "label": "Create index \"RolePermission_permissionId_idx_f46fcdf5\" on \"RolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "RolePermission_permissionId_idx_f46fcdf5",
+        "table": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"RolePermission_permissionId_idx_f46fcdf5\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission_permissionId_idx_f46fcdf5\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"RolePermission_permissionId_idx_f46fcdf5\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"RolePermission_permissionId_idx_f46fcdf5\"",
+        "sql": "CREATE INDEX \"RolePermission_permissionId_idx_f46fcdf5\" ON \"public\".\"RolePermission\" (\"permissionId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"RolePermission_permissionId_idx_f46fcdf5\" exists on \"RolePermission\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission_permissionId_idx_f46fcdf5\"",
+          "i",
+          "I",
+          "\"public\".\"RolePermission\"",
+          "btree",
+          "[\"permissionId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.RolePermission.RolePermission_roleId_idx_ffccc9a4",
+    "label": "Create index \"RolePermission_roleId_idx_ffccc9a4\" on \"RolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "RolePermission_roleId_idx_ffccc9a4",
+        "table": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"RolePermission_roleId_idx_ffccc9a4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission_roleId_idx_ffccc9a4\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"RolePermission_roleId_idx_ffccc9a4\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"RolePermission_roleId_idx_ffccc9a4\"",
+        "sql": "CREATE INDEX \"RolePermission_roleId_idx_ffccc9a4\" ON \"public\".\"RolePermission\" (\"roleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"RolePermission_roleId_idx_ffccc9a4\" exists on \"RolePermission\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"RolePermission_roleId_idx_ffccc9a4\"",
+          "i",
+          "I",
+          "\"public\".\"RolePermission\"",
+          "btree",
+          "[\"roleId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserRole.UserRole_roleId_idx_ffccc9a4",
+    "label": "Create index \"UserRole_roleId_idx_ffccc9a4\" on \"UserRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserRole_roleId_idx_ffccc9a4",
+        "table": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserRole_roleId_idx_ffccc9a4\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole_roleId_idx_ffccc9a4\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"UserRole_roleId_idx_ffccc9a4\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserRole_roleId_idx_ffccc9a4\"",
+        "sql": "CREATE INDEX \"UserRole_roleId_idx_ffccc9a4\" ON \"public\".\"UserRole\" (\"roleId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserRole_roleId_idx_ffccc9a4\" exists on \"UserRole\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole_roleId_idx_ffccc9a4\"",
+          "i",
+          "I",
+          "\"public\".\"UserRole\"",
+          "btree",
+          "[\"roleId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.UserRole.UserRole_userId_idx_a489d58a",
+    "label": "Create index \"UserRole_userId_idx_a489d58a\" on \"UserRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "UserRole_userId_idx_a489d58a",
+        "table": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"UserRole_userId_idx_a489d58a\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole_userId_idx_a489d58a\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "index \"UserRole_userId_idx_a489d58a\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"UserRole_userId_idx_a489d58a\"",
+        "sql": "CREATE INDEX \"UserRole_userId_idx_a489d58a\" ON \"public\".\"UserRole\" (\"userId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"UserRole_userId_idx_a489d58a\" exists on \"UserRole\" with the planned definition",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_class\" AS \"c\" INNER JOIN \"pg_index\" AS \"i\" ON \"i\".\"indexrelid\" = \"c\".\"oid\" INNER JOIN \"pg_am\" AS \"m\" ON \"m\".\"oid\" = \"c\".\"relam\" WHERE (\"c\".\"oid\" = to_regclass($1) AND (\"c\".\"relkind\" = $2 OR \"c\".\"relkind\" = $3) AND \"i\".\"indrelid\" = to_regclass($4) AND NOT (\"i\".\"indisunique\") AND \"m\".\"amname\" = $5 AND (\"i\".\"indexprs\" IS NULL AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"i\".\"indkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"i\".\"indrelid\" AND key_attribute.attnum = key_column.attnum) = ($6)::jsonb) AND \"i\".\"indpred\" IS NULL)) AS \"result\"",
+        "params": [
+          "\"public\".\"UserRole_userId_idx_a489d58a\"",
+          "i",
+          "I",
+          "\"public\".\"UserRole\"",
+          "btree",
+          "[\"userId\"]"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.RolePermission.RolePermission_roleId_fkey",
+    "label": "Add foreign key \"RolePermission_roleId_fkey\" on \"RolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "RolePermission_roleId_fkey",
+        "table": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"RolePermission_roleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RolePermission_roleId_fkey",
+          "public",
+          "\"public\".\"RolePermission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"RolePermission_roleId_fkey\" on \"RolePermission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"RolePermission_roleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"RolePermission\"\nADD CONSTRAINT \"RolePermission_roleId_fkey\"\nFOREIGN KEY (\"roleId\")\nREFERENCES \"public\".\"Role\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"RolePermission_roleId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "RolePermission_roleId_fkey",
+          "public",
+          "\"public\".\"RolePermission\"",
+          "f",
+          "[\"roleId\"]",
+          "\"public\".\"Role\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.RolePermission.RolePermission_permissionId_fkey",
+    "label": "Add foreign key \"RolePermission_permissionId_fkey\" on \"RolePermission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "RolePermission_permissionId_fkey",
+        "table": "RolePermission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"RolePermission_permissionId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "RolePermission_permissionId_fkey",
+          "public",
+          "\"public\".\"RolePermission\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"RolePermission_permissionId_fkey\" on \"RolePermission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"RolePermission_permissionId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"RolePermission\"\nADD CONSTRAINT \"RolePermission_permissionId_fkey\"\nFOREIGN KEY (\"permissionId\")\nREFERENCES \"public\".\"Permission\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"RolePermission_permissionId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "RolePermission_permissionId_fkey",
+          "public",
+          "\"public\".\"RolePermission\"",
+          "f",
+          "[\"permissionId\"]",
+          "\"public\".\"Permission\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserRole.UserRole_userId_fkey",
+    "label": "Add foreign key \"UserRole_userId_fkey\" on \"UserRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserRole_userId_fkey",
+        "table": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserRole_userId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserRole_userId_fkey",
+          "public",
+          "\"public\".\"UserRole\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"UserRole_userId_fkey\" on \"UserRole\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserRole_userId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserRole\"\nADD CONSTRAINT \"UserRole_userId_fkey\"\nFOREIGN KEY (\"userId\")\nREFERENCES \"public\".\"User\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserRole_userId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "UserRole_userId_fkey",
+          "public",
+          "\"public\".\"UserRole\"",
+          "f",
+          "[\"userId\"]",
+          "\"public\".\"User\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.UserRole.UserRole_roleId_fkey",
+    "label": "Add foreign key \"UserRole_roleId_fkey\" on \"UserRole\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "UserRole_roleId_fkey",
+        "table": "UserRole"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"UserRole_roleId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "UserRole_roleId_fkey",
+          "public",
+          "\"public\".\"UserRole\""
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "FK \"UserRole_roleId_fkey\" on \"UserRole\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"UserRole_roleId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"UserRole\"\nADD CONSTRAINT \"UserRole_roleId_fkey\"\nFOREIGN KEY (\"roleId\")\nREFERENCES \"public\".\"Role\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"UserRole_roleId_fkey\" exists with the planned columns, referenced table and actions",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3) AND \"c\".\"contype\" = $4 AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"conkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"conrelid\" AND key_attribute.attnum = key_column.attnum) = ($5)::jsonb AND \"c\".\"confrelid\" = to_regclass($6) AND (SELECT coalesce(jsonb_agg(key_attribute.attname ORDER BY key_column.position), '[]'::jsonb) FROM unnest(\"c\".\"confkey\"::int2[]) WITH ORDINALITY AS key_column(attnum, position) JOIN pg_attribute key_attribute ON key_attribute.attrelid = \"c\".\"confrelid\" AND key_attribute.attnum = key_column.attnum) = ($7)::jsonb AND \"c\".\"confdeltype\" = $8 AND \"c\".\"confupdtype\" = $9)) AS \"result\"",
+        "params": [
+          "UserRole_roleId_fkey",
+          "public",
+          "\"public\".\"UserRole\"",
+          "f",
+          "[\"roleId\"]",
+          "\"public\".\"Role\"",
+          "[\"id\"]",
+          "c",
+          "a"
+        ]
+      }
+    ]
+  }
+]

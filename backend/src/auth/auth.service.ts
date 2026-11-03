@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { createHash, createHmac, randomBytes, randomInt, randomUUID, scrypt as scryptCallback, timingSafeEqual } from 'node:crypto';
 import { promisify } from 'node:util';
@@ -24,12 +24,35 @@ async function passwordHash(password: string, salt = randomBytes(16).toString('h
 export class AuthService {
   constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService) {}
 
+  async setupStatus() {
+    return { setupRequired: !(await this.prisma.db.orm.public.User.first()) };
+  }
+
+  async setup(input: RegisterDto) {
+    return this.createUser(input, true);
+  }
+
   async register(input: RegisterDto) {
+    return this.createUser(input, false);
+  }
+
+  private async createUser(input: RegisterDto, initial: boolean) {
     const email = input.email.trim().toLowerCase();
     const encoded = await passwordHash(input.password);
+    const db = this.prisma.db;
     try {
-      const user = await this.prisma.db.orm.public.User.create({ id: randomUUID(), email, name: input.name.trim(), passwordHash: encoded });
-      return { id: user.id, email: user.email, name: user.name };
+      return await db.transaction(async (tx) => {
+        // All public user creation paths share this lock, including across instances.
+        await tx.query(db.raw.sql`SELECT pg_advisory_xact_lock(734928101) IS NULL AS "locked"`.returnsRow({ locked: 'pg/bool@1' }).build());
+        const exists = !!(await tx.orm.public.User.first());
+        if (initial && exists) throw new ConflictException({ code: 'SETUP_ALREADY_COMPLETE', message: 'Initial setup has already been completed' });
+        if (!initial && !exists) throw new ConflictException({ code: 'SETUP_REQUIRED', message: 'Initial setup is required' });
+        const role = initial ? await tx.orm.public.Role.where({ name: 'super_admin' }).first() : null;
+        if (initial && !role) throw new ServiceUnavailableException('Run the RBAC seed before initial setup');
+        const user = await tx.orm.public.User.create({ id: randomUUID(), email, name: input.name.trim(), passwordHash: encoded });
+        if (role) await tx.orm.public.UserRole.create({ id: randomUUID(), userId: user.id, roleId: role.id });
+        return { id: user.id, email: user.email, name: user.name };
+      });
     } catch (error) {
       if ((error as { sqlState?: string }).sqlState === '23505') throw new ConflictException('Email is already registered');
       throw error;

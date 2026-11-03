@@ -12,12 +12,28 @@
       "model": "LoginAttempt",
       "namespace": "public"
     },
+    "Permission": {
+      "model": "Permission",
+      "namespace": "public"
+    },
+    "Role": {
+      "model": "Role",
+      "namespace": "public"
+    },
+    "RolePermission": {
+      "model": "RolePermission",
+      "namespace": "public"
+    },
     "UsedRefreshToken": {
       "model": "UsedRefreshToken",
       "namespace": "public"
     },
     "User": {
       "model": "User",
+      "namespace": "public"
+    },
+    "UserRole": {
+      "model": "UserRole",
       "namespace": "public"
     }
   },
@@ -189,6 +205,249 @@
               "table": "LoginAttempt"
             }
           },
+          "Permission": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "key": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "roles": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "permissionId"
+                  ]
+                },
+                "to": {
+                  "model": "RolePermission",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "key": {
+                  "column": "key"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Permission"
+            }
+          },
+          "Role": {
+            "fields": {
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "description": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "permissions": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "roleId"
+                  ]
+                },
+                "to": {
+                  "model": "RolePermission",
+                  "namespace": "public"
+                }
+              },
+              "users": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "roleId"
+                  ]
+                },
+                "to": {
+                  "model": "UserRole",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "createdAt": {
+                  "column": "createdAt"
+                },
+                "description": {
+                  "column": "description"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "updatedAt": {
+                  "column": "updatedAt"
+                }
+              },
+              "namespaceId": "public",
+              "table": "Role"
+            }
+          },
+          "RolePermission": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "permissionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "roleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "permission": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "permissionId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Permission",
+                  "namespace": "public"
+                }
+              },
+              "role": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "roleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Role",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "permissionId": {
+                  "column": "permissionId"
+                },
+                "roleId": {
+                  "column": "roleId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "RolePermission"
+            }
+          },
           "UsedRefreshToken": {
             "fields": {
               "id": {
@@ -279,6 +538,21 @@
               }
             },
             "relations": {
+              "roles": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "userId"
+                  ]
+                },
+                "to": {
+                  "model": "UserRole",
+                  "namespace": "public"
+                }
+              },
               "sessions": {
                 "cardinality": "1:N",
                 "on": {
@@ -312,6 +586,80 @@
               },
               "namespaceId": "public",
               "table": "User"
+            }
+          },
+          "UserRole": {
+            "fields": {
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "roleId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "role": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "roleId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Role",
+                  "namespace": "public"
+                }
+              },
+              "user": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "userId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "User",
+                  "namespace": "public"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "id": {
+                  "column": "id"
+                },
+                "roleId": {
+                  "column": "roleId"
+                },
+                "userId": {
+                  "column": "userId"
+                }
+              },
+              "namespaceId": "public",
+              "table": "UserRole"
             }
           }
         }
@@ -449,6 +797,184 @@
               },
               "uniques": []
             },
+            "Permission": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "key": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "key"
+                  ]
+                }
+              ]
+            },
+            "Role": {
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "description": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": true
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "updatedAt": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "name"
+                  ]
+                }
+              ]
+            },
+            "RolePermission": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "permissionId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "roleId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "RolePermission_roleId_idx_ffccc9a4"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "roleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "RolePermission"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Role"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "RolePermission_permissionId_idx_f46fcdf5"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "permissionId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "RolePermission"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Permission"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "permissionId"
+                  ],
+                  "name": "RolePermission_permissionId_idx_f46fcdf5",
+                  "prefix": "RolePermission_permissionId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "roleId"
+                  ],
+                  "name": "RolePermission_roleId_idx_ffccc9a4",
+                  "prefix": "RolePermission_roleId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "roleId",
+                    "permissionId"
+                  ]
+                }
+              ]
+            },
             "UsedRefreshToken": {
               "columns": {
                 "id": {
@@ -549,6 +1075,98 @@
                   ]
                 }
               ]
+            },
+            "UserRole": {
+              "columns": {
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "roleId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "userId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "UserRole_userId_idx_a489d58a"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "userId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserRole"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "User"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "UserRole_roleId_idx_ffccc9a4"
+                  },
+                  "onDelete": "cascade",
+                  "source": {
+                    "columns": [
+                      "roleId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "UserRole"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "Role"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "roleId"
+                  ],
+                  "name": "UserRole_roleId_idx_ffccc9a4",
+                  "prefix": "UserRole_roleId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "userId"
+                  ],
+                  "name": "UserRole_userId_idx_a489d58a",
+                  "prefix": "UserRole_userId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "userId",
+                    "roleId"
+                  ]
+                }
+              ]
             }
           }
         },
@@ -556,7 +1174,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "47e37d55f177da50a82b669f5f6eed155208401d181dd97fd42fac7d95188b2d"
+    "storageHash": "41ef212cbb99ab9848b71440ef657f90a6b739e60328d01ebfe832fc6ee0ef21"
   },
   "capabilities": {
     "postgres": {

@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'47e37d55f177da50a82b669f5f6eed155208401d181dd97fd42fac7d95188b2d'>;
+  StorageHashBase<'41ef212cbb99ab9848b71440ef657f90a6b739e60328d01ebfe832fc6ee0ef21'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -320,6 +320,33 @@ export namespace Models {
     lockedUntil: FieldOutputTypes['public']['LoginAttempt']['lockedUntil'];
     readonly [RelationKeys]?: never;
   };
+  export type public_Permission = {
+    createdAt: FieldOutputTypes['public']['Permission']['createdAt'];
+    description: FieldOutputTypes['public']['Permission']['description'];
+    id: FieldOutputTypes['public']['Permission']['id'];
+    key: FieldOutputTypes['public']['Permission']['key'];
+    updatedAt: FieldOutputTypes['public']['Permission']['updatedAt'];
+    roles: public_RolePermission[];
+    readonly [RelationKeys]?: 'roles';
+  };
+  export type public_Role = {
+    createdAt: FieldOutputTypes['public']['Role']['createdAt'];
+    description: FieldOutputTypes['public']['Role']['description'];
+    id: FieldOutputTypes['public']['Role']['id'];
+    name: FieldOutputTypes['public']['Role']['name'];
+    updatedAt: FieldOutputTypes['public']['Role']['updatedAt'];
+    permissions: public_RolePermission[];
+    users: public_UserRole[];
+    readonly [RelationKeys]?: 'permissions' | 'users';
+  };
+  export type public_RolePermission = {
+    id: FieldOutputTypes['public']['RolePermission']['id'];
+    permissionId: FieldOutputTypes['public']['RolePermission']['permissionId'];
+    roleId: FieldOutputTypes['public']['RolePermission']['roleId'];
+    permission: public_Permission;
+    role: public_Role;
+    readonly [RelationKeys]?: 'permission' | 'role';
+  };
   export type public_UsedRefreshToken = {
     id: FieldOutputTypes['public']['UsedRefreshToken']['id'];
     sessionId: FieldOutputTypes['public']['UsedRefreshToken']['sessionId'];
@@ -332,8 +359,17 @@ export namespace Models {
     id: FieldOutputTypes['public']['User']['id'];
     name: FieldOutputTypes['public']['User']['name'];
     passwordHash: FieldOutputTypes['public']['User']['passwordHash'];
+    roles: public_UserRole[];
     sessions: public_AuthSession[];
-    readonly [RelationKeys]?: 'sessions';
+    readonly [RelationKeys]?: 'roles' | 'sessions';
+  };
+  export type public_UserRole = {
+    id: FieldOutputTypes['public']['UserRole']['id'];
+    roleId: FieldOutputTypes['public']['UserRole']['roleId'];
+    userId: FieldOutputTypes['public']['UserRole']['userId'];
+    role: public_Role;
+    user: public_User;
+    readonly [RelationKeys]?: 'role' | 'user';
   };
 }
 
@@ -341,8 +377,12 @@ export declare const models: {
   public: {
     AuthSession: Models.public_AuthSession;
     LoginAttempt: Models.public_LoginAttempt;
+    Permission: Models.public_Permission;
+    Role: Models.public_Role;
+    RolePermission: Models.public_RolePermission;
     UsedRefreshToken: Models.public_UsedRefreshToken;
     User: Models.public_User;
+    UserRole: Models.public_UserRole;
   };
 };
 
@@ -479,6 +519,146 @@ type ContractBase = Omit<
               ];
               foreignKeys: readonly [];
             };
+            readonly Permission: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly description: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly key: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['key'] }];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly Role: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly description: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['name'] }];
+              indexes: readonly [];
+              foreignKeys: readonly [];
+            };
+            readonly RolePermission: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly permissionId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly roleId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['roleId', 'permissionId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'RolePermission_permissionId_idx_f46fcdf5';
+                  readonly prefix: 'RolePermission_permissionId_idx';
+                  readonly columns: readonly ['permissionId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'RolePermission_roleId_idx_ffccc9a4';
+                  readonly prefix: 'RolePermission_roleId_idx';
+                  readonly columns: readonly ['roleId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'RolePermission';
+                    readonly columns: readonly ['roleId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Role';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'RolePermission';
+                    readonly columns: readonly ['permissionId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Permission';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly UsedRefreshToken: {
               columns: {
                 readonly id: {
@@ -557,6 +737,70 @@ type ContractBase = Omit<
               indexes: readonly [];
               foreignKeys: readonly [];
             };
+            readonly UserRole: {
+              columns: {
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly roleId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['userId', 'roleId'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'UserRole_roleId_idx_ffccc9a4';
+                  readonly prefix: 'UserRole_roleId_idx';
+                  readonly columns: readonly ['roleId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'UserRole_userId_idx_a489d58a';
+                  readonly prefix: 'UserRole_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserRole';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'User';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'UserRole';
+                    readonly columns: readonly ['roleId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'Role';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
           };
         };
       };
@@ -576,11 +820,21 @@ type ContractBase = Omit<
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'LoginAttempt';
     };
+    readonly Permission: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Permission';
+    };
+    readonly Role: { readonly namespace: 'public' & NamespaceId; readonly model: 'Role' };
+    readonly RolePermission: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'RolePermission';
+    };
     readonly UsedRefreshToken: {
       readonly namespace: 'public' & NamespaceId;
       readonly model: 'UsedRefreshToken';
     };
     readonly User: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+    readonly UserRole: { readonly namespace: 'public' & NamespaceId; readonly model: 'UserRole' };
   };
   readonly domain: {
     readonly namespaces: {
@@ -684,6 +938,161 @@ type ContractBase = Omit<
               };
             };
           };
+          readonly Permission: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly roles: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'RolePermission';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['permissionId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Permission';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly id: { readonly column: 'id' };
+                readonly key: { readonly column: 'key' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly Role: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly permissions: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'RolePermission';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['roleId'];
+                };
+              };
+              readonly users: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'UserRole';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['roleId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'Role';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly RolePermission: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly permissionId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly roleId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly permission: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Permission';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['permissionId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly role: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Role' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['roleId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'RolePermission';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly permissionId: { readonly column: 'permissionId' };
+                readonly roleId: { readonly column: 'roleId' };
+              };
+            };
+          };
           readonly UsedRefreshToken: {
             readonly fields: {
               readonly id: {
@@ -743,6 +1152,17 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly roles: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'UserRole';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+              };
               readonly sessions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -763,6 +1183,51 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
                 readonly passwordHash: { readonly column: 'passwordHash' };
+              };
+            };
+          };
+          readonly UserRole: {
+            readonly fields: {
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly roleId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly role: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'Role' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['roleId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'UserRole';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly id: { readonly column: 'id' };
+                readonly roleId: { readonly column: 'roleId' };
+                readonly userId: { readonly column: 'userId' };
               };
             };
           };
