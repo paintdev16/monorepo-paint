@@ -16,11 +16,13 @@ try {
     if (command === 'seed') {
       const now = new Date().toISOString();
       for (const key of SYSTEM_PERMISSIONS) {
-        if (!await tx.orm.public.Permission.where({ key }).first()) await tx.orm.public.Permission.create({ id: randomUUID(), key, description: null, createdAt: now, updatedAt: now });
+        const existing = await tx.orm.public.Permission.where({ key }).first();
+        if (!existing) await tx.orm.public.Permission.create({ id: randomUUID(), key, isRequired: true, description: null, createdAt: now, updatedAt: now });
+        else if (!existing.isRequired) await tx.orm.public.Permission.where({ id: existing.id }).update({ isRequired: true, updatedAt: now });
       }
       for (const name of SYSTEM_ROLES) {
         if (!await tx.orm.public.Role.where({ name }).first()) {
-          const role = await tx.orm.public.Role.create({ id: randomUUID(), name, description: null, createdAt: now, updatedAt: now });
+          const role = await tx.orm.public.Role.create({ id: randomUUID(), name, isRequired: true, description: null, createdAt: now, updatedAt: now });
           if (name === 'admin') {
             for (const key of SYSTEM_PERMISSIONS.filter((value) => value.endsWith('.view'))) {
               const permission = await tx.orm.public.Permission.where({ key }).first();
@@ -28,7 +30,7 @@ try {
               await tx.orm.public.RolePermission.create({ id: randomUUID(), roleId: role.id, permissionId: permission.id });
             }
           }
-        }
+        } else await tx.orm.public.Role.where({ name }).update({ isRequired: true });
       }
       return;
     }

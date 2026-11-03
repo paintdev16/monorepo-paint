@@ -228,6 +228,13 @@
                   "kind": "scalar"
                 }
               },
+              "isRequired": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "key": {
                 "nullable": false,
                 "type": {
@@ -271,6 +278,9 @@
                 "id": {
                   "column": "id"
                 },
+                "isRequired": {
+                  "column": "isRequired"
+                },
                 "key": {
                   "column": "key"
                 },
@@ -302,6 +312,13 @@
                 "nullable": false,
                 "type": {
                   "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "isRequired": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
                   "kind": "scalar"
                 }
               },
@@ -362,6 +379,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "isRequired": {
+                  "column": "isRequired"
                 },
                 "name": {
                   "column": "name"
@@ -814,6 +834,15 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
+                "isRequired": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nullable": false
+                },
                 "key": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
@@ -855,6 +884,15 @@
                 "id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
+                  "nullable": false
+                },
+                "isRequired": {
+                  "codecId": "pg/bool@1",
+                  "dataType": "pg/bool",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
                   "nullable": false
                 },
                 "name": {
@@ -1174,7 +1212,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "41ef212cbb99ab9848b71440ef657f90a6b739e60328d01ebfe832fc6ee0ef21"
+    "storageHash": "7440cfd67ab41999f99308312ccea3beffd2142fe285ad7284f8ce6c267593e0"
   },
   "capabilities": {
     "postgres": {

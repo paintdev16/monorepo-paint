@@ -12,6 +12,7 @@ model User {
 model Role {
   id String @id
   name String @unique
+  isRequired Boolean @default(false)
   description String?
   createdAt String
   updatedAt String
@@ -22,6 +23,7 @@ model Role {
 model Permission {
   id String @id
   key String @unique
+  isRequired Boolean @default(false)
   description String?
   createdAt String
   updatedAt String

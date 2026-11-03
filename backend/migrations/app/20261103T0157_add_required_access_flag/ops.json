@@ -1,0 +1,852 @@
+[
+  {
+    "id": "column.public.Permission.isRequired",
+    "label": "Add column \"isRequired\" to \"Permission\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "isRequired",
+        "table": "Permission"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"isRequired\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Permission",
+          "isRequired"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"isRequired\" on \"Permission\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"isRequired\"",
+        "sql": "ALTER TABLE \"public\".\"Permission\" ADD COLUMN \"isRequired\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"isRequired\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Permission",
+          "isRequired"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"isRequired\" on \"Permission\""
+        }
+      },
+      {
+        "description": "verify column \"isRequired\" has type \"boolean\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Permission",
+          "isRequired",
+          "boolean"
+        ]
+      },
+      {
+        "description": "verify column \"isRequired\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Permission",
+          "isRequired",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.public.Role.isRequired",
+    "label": "Add column \"isRequired\" to \"Role\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "column",
+        "name": "isRequired",
+        "table": "Role"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"isRequired\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Role",
+          "isRequired"
+        ],
+        "expectation": {
+          "expects": "absent",
+          "object": "column \"isRequired\" on \"Role\""
+        }
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"isRequired\"",
+        "sql": "ALTER TABLE \"public\".\"Role\" ADD COLUMN \"isRequired\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"isRequired\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "public",
+          "Role",
+          "isRequired"
+        ],
+        "expectation": {
+          "expects": "present",
+          "object": "column \"isRequired\" on \"Role\""
+        }
+      },
+      {
+        "description": "verify column \"isRequired\" has type \"boolean\"",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_attribute\" AS \"a\" INNER JOIN \"pg_class\" AS \"c\" ON \"c\".\"oid\" = \"a\".\"attrelid\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"relnamespace\" WHERE (\"n\".\"nspname\" = $1 AND \"c\".\"relname\" = $2 AND \"a\".\"attname\" = $3 AND (format_type(\"a\".\"atttypid\", \"a\".\"atttypmod\")) = $4 AND NOT (\"a\".\"attisdropped\"))) AS \"result\"",
+        "params": [
+          "public",
+          "Role",
+          "isRequired",
+          "boolean"
+        ]
+      },
+      {
+        "description": "verify column \"isRequired\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "public",
+          "Role",
+          "isRequired",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-role-super_admin",
+    "label": "Data transform: require-role-super_admin",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-role-super_admin has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "super_admin",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-role-super_admin",
+        "sql": "UPDATE \"public\".\"Role\" SET \"isRequired\" = $1 WHERE \"name\" = $2",
+        "params": [
+          true,
+          "super_admin"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-role-super_admin resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "super_admin",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-role-admin",
+    "label": "Data transform: require-role-admin",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-role-admin has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "admin",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-role-admin",
+        "sql": "UPDATE \"public\".\"Role\" SET \"isRequired\" = $1 WHERE \"name\" = $2",
+        "params": [
+          true,
+          "admin"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-role-admin resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "admin",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-role-client",
+    "label": "Data transform: require-role-client",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-role-client has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "client",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-role-client",
+        "sql": "UPDATE \"public\".\"Role\" SET \"isRequired\" = $1 WHERE \"name\" = $2",
+        "params": [
+          true,
+          "client"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-role-client resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Role\" WHERE (\"name\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "client",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-users.view",
+    "label": "Data transform: require-permission-users.view",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-users.view has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.view",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-users.view",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "users.view"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-users.view resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.view",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-users.create",
+    "label": "Data transform: require-permission-users.create",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-users.create has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.create",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-users.create",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "users.create"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-users.create resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.create",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-users.update",
+    "label": "Data transform: require-permission-users.update",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-users.update has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.update",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-users.update",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "users.update"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-users.update resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.update",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-users.delete",
+    "label": "Data transform: require-permission-users.delete",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-users.delete has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.delete",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-users.delete",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "users.delete"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-users.delete resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "users.delete",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-roles.view",
+    "label": "Data transform: require-permission-roles.view",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-roles.view has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.view",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-roles.view",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "roles.view"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-roles.view resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.view",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-roles.create",
+    "label": "Data transform: require-permission-roles.create",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-roles.create has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.create",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-roles.create",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "roles.create"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-roles.create resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.create",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-roles.update",
+    "label": "Data transform: require-permission-roles.update",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-roles.update has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.update",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-roles.update",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "roles.update"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-roles.update resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.update",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-roles.delete",
+    "label": "Data transform: require-permission-roles.delete",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-roles.delete has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.delete",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-roles.delete",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "roles.delete"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-roles.delete resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "roles.delete",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-permissions.view",
+    "label": "Data transform: require-permission-permissions.view",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-permissions.view has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.view",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-permissions.view",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "permissions.view"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-permissions.view resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.view",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-permissions.create",
+    "label": "Data transform: require-permission-permissions.create",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-permissions.create has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.create",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-permissions.create",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "permissions.create"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-permissions.create resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.create",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-permissions.update",
+    "label": "Data transform: require-permission-permissions.update",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-permissions.update has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.update",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-permissions.update",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "permissions.update"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-permissions.update resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.update",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.require-permission-permissions.delete",
+    "label": "Data transform: require-permission-permissions.delete",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check require-permission-permissions.delete has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.delete",
+          false
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run require-permission-permissions.delete",
+        "sql": "UPDATE \"public\".\"Permission\" SET \"isRequired\" = $1 WHERE \"key\" = $2",
+        "params": [
+          true,
+          "permissions.delete"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify require-permission-permissions.delete resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE (\"key\" = $1 AND \"isRequired\" = $2) LIMIT 1) AS ok",
+        "params": [
+          "permissions.delete",
+          false
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.remove-permission-orders.view",
+    "label": "Data transform: remove-permission-orders.view",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check remove-permission-orders.view has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.view"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run remove-permission-orders.view",
+        "sql": "DELETE FROM \"public\".\"Permission\" WHERE \"key\" = $1",
+        "params": [
+          "orders.view"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify remove-permission-orders.view resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.view"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.remove-permission-orders.create",
+    "label": "Data transform: remove-permission-orders.create",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check remove-permission-orders.create has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.create"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run remove-permission-orders.create",
+        "sql": "DELETE FROM \"public\".\"Permission\" WHERE \"key\" = $1",
+        "params": [
+          "orders.create"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify remove-permission-orders.create resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.create"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.remove-permission-orders.update",
+    "label": "Data transform: remove-permission-orders.update",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check remove-permission-orders.update has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.update"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run remove-permission-orders.update",
+        "sql": "DELETE FROM \"public\".\"Permission\" WHERE \"key\" = $1",
+        "params": [
+          "orders.update"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify remove-permission-orders.update resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.update"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "data_migration.remove-permission-orders.delete",
+    "label": "Data transform: remove-permission-orders.delete",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [
+      {
+        "description": "Check remove-permission-orders.delete has work to do",
+        "sql": "SELECT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.delete"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "Run remove-permission-orders.delete",
+        "sql": "DELETE FROM \"public\".\"Permission\" WHERE \"key\" = $1",
+        "params": [
+          "orders.delete"
+        ]
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "Verify remove-permission-orders.delete resolved all violations",
+        "sql": "SELECT NOT EXISTS (SELECT \"id\" AS \"id\" FROM \"public\".\"Permission\" WHERE \"key\" = $1 LIMIT 1) AS ok",
+        "params": [
+          "orders.delete"
+        ]
+      }
+    ]
+  }
+]

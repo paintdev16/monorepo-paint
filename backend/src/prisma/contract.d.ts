@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'41ef212cbb99ab9848b71440ef657f90a6b739e60328d01ebfe832fc6ee0ef21'>;
+  StorageHashBase<'7440cfd67ab41999f99308312ccea3beffd2142fe285ad7284f8ce6c267593e0'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
@@ -324,6 +324,7 @@ export namespace Models {
     createdAt: FieldOutputTypes['public']['Permission']['createdAt'];
     description: FieldOutputTypes['public']['Permission']['description'];
     id: FieldOutputTypes['public']['Permission']['id'];
+    isRequired: FieldOutputTypes['public']['Permission']['isRequired'];
     key: FieldOutputTypes['public']['Permission']['key'];
     updatedAt: FieldOutputTypes['public']['Permission']['updatedAt'];
     roles: public_RolePermission[];
@@ -333,6 +334,7 @@ export namespace Models {
     createdAt: FieldOutputTypes['public']['Role']['createdAt'];
     description: FieldOutputTypes['public']['Role']['description'];
     id: FieldOutputTypes['public']['Role']['id'];
+    isRequired: FieldOutputTypes['public']['Role']['isRequired'];
     name: FieldOutputTypes['public']['Role']['name'];
     updatedAt: FieldOutputTypes['public']['Role']['updatedAt'];
     permissions: public_RolePermission[];
@@ -539,6 +541,16 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly many: false;
                 };
+                readonly isRequired: {
+                  readonly dataType: 'pg/bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                  readonly many: false;
+                };
                 readonly key: {
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
@@ -575,6 +587,16 @@ type ContractBase = Omit<
                   readonly dataType: 'pg/text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly isRequired: {
+                  readonly dataType: 'pg/bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
                   readonly many: false;
                 };
                 readonly name: {
@@ -952,6 +974,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly isRequired: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly key: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
@@ -981,6 +1007,7 @@ type ContractBase = Omit<
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly description: { readonly column: 'description' };
                 readonly id: { readonly column: 'id' };
+                readonly isRequired: { readonly column: 'isRequired' };
                 readonly key: { readonly column: 'key' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };
@@ -999,6 +1026,10 @@ type ContractBase = Omit<
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly isRequired: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
               readonly name: {
                 readonly nullable: false;
@@ -1040,6 +1071,7 @@ type ContractBase = Omit<
                 readonly createdAt: { readonly column: 'createdAt' };
                 readonly description: { readonly column: 'description' };
                 readonly id: { readonly column: 'id' };
+                readonly isRequired: { readonly column: 'isRequired' };
                 readonly name: { readonly column: 'name' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
               };

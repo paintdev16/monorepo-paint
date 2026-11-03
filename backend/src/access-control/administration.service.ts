@@ -38,19 +38,23 @@ export class AdministrationService {
   createRole(input: RoleCreateDto) {
     if (SYSTEM_ROLES.includes(input.name)) throw new ConflictException('Reserved role name');
     const now = new Date().toISOString();
-    return this.conflict(() => this.prisma.db.orm.public.Role.create({ id: randomUUID(), name: input.name, description: input.description ?? null, createdAt: now, updatedAt: now }));
+    return this.conflict(() => this.prisma.db.orm.public.Role.create({ id: randomUUID(), name: input.name, isRequired: input.isRequired ?? false, description: input.description ?? null, createdAt: now, updatedAt: now }));
   }
   async updateRole(id: string, input: RoleUpdateDto) {
-    const role = await this.role(id);
-    if (SYSTEM_ROLES.includes(role.name) || (input.name && SYSTEM_ROLES.includes(input.name))) throw new ForbiddenSystemResource();
-    return this.conflict(() => this.prisma.db.orm.public.Role.where({ id }).update({ name: input.name, description: input.description, updatedAt: new Date().toISOString() }));
+    return this.conflict(() => this.prisma.db.transaction(async (tx) => {
+      const role = await tx.orm.public.Role.where({ id }).forNoKeyUpdate().first();
+      if (!role) throw new NotFoundException('Role not found');
+      if (SYSTEM_ROLES.includes(role.name) || (input.name && SYSTEM_ROLES.includes(input.name))) throw new ForbiddenSystemResource();
+      if (role.isRequired && input.name !== undefined && input.name !== role.name) throw new ForbiddenSystemResource();
+      return tx.orm.public.Role.where({ id }).update({ name: input.name, description: input.description, isRequired: input.isRequired, updatedAt: new Date().toISOString() });
+    }));
   }
   async deleteRole(id: string) {
     const db = this.prisma.db;
     return db.transaction(async (tx) => {
       const role = await tx.orm.public.Role.where({ id }).forNoKeyUpdate().first();
       if (!role) throw new NotFoundException('Role not found');
-      if (SYSTEM_ROLES.includes(role.name)) throw new ForbiddenSystemResource();
+      if (role.isRequired || SYSTEM_ROLES.includes(role.name)) throw new ForbiddenSystemResource();
       if (await tx.orm.public.UserRole.where({ roleId: id }).first()) throw new ConflictException('Role is assigned to users');
       await tx.orm.public.Role.where({ id }).delete();
     });
@@ -88,19 +92,23 @@ export class AdministrationService {
   createPermission(input: PermissionCreateDto) {
     if (SYSTEM_PERMISSIONS.includes(input.key)) throw new ConflictException('Reserved permission key');
     const now = new Date().toISOString();
-    return this.conflict(() => this.prisma.db.orm.public.Permission.create({ id: randomUUID(), key: input.key, description: input.description ?? null, createdAt: now, updatedAt: now }));
+    return this.conflict(() => this.prisma.db.orm.public.Permission.create({ id: randomUUID(), key: input.key, isRequired: input.isRequired ?? false, description: input.description ?? null, createdAt: now, updatedAt: now }));
   }
   async updatePermission(id: string, input: PermissionUpdateDto) {
-    const permission = await this.permission(id);
-    if (SYSTEM_PERMISSIONS.includes(permission.key) || (input.key && SYSTEM_PERMISSIONS.includes(input.key))) throw new ForbiddenSystemResource();
-    return this.conflict(() => this.prisma.db.orm.public.Permission.where({ id }).update({ key: input.key, description: input.description, updatedAt: new Date().toISOString() }));
+    return this.conflict(() => this.prisma.db.transaction(async (tx) => {
+      const permission = await tx.orm.public.Permission.where({ id }).forNoKeyUpdate().first();
+      if (!permission) throw new NotFoundException('Permission not found');
+      if (SYSTEM_PERMISSIONS.includes(permission.key) || (input.key && SYSTEM_PERMISSIONS.includes(input.key))) throw new ForbiddenSystemResource();
+      if (permission.isRequired && input.key !== undefined && input.key !== permission.key) throw new ForbiddenSystemResource();
+      return tx.orm.public.Permission.where({ id }).update({ key: input.key, description: input.description, isRequired: input.isRequired, updatedAt: new Date().toISOString() });
+    }));
   }
   async deletePermission(id: string) {
     const db = this.prisma.db;
     return db.transaction(async (tx) => {
       const permission = await tx.orm.public.Permission.where({ id }).forNoKeyUpdate().first();
       if (!permission) throw new NotFoundException('Permission not found');
-      if (SYSTEM_PERMISSIONS.includes(permission.key)) throw new ForbiddenSystemResource();
+      if (permission.isRequired || SYSTEM_PERMISSIONS.includes(permission.key)) throw new ForbiddenSystemResource();
       if (await tx.orm.public.RolePermission.where({ permissionId: id }).first()) throw new ConflictException('Permission is assigned to roles');
       await tx.orm.public.Permission.where({ id }).delete();
     });
