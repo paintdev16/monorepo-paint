@@ -24,5 +24,5 @@ async function CheckSetup({ children, setup }: { children: React.ReactNode; setu
 }
 
 export function SetupGate({ children, setup = false }: { children: React.ReactNode; setup?: boolean }) {
-  return <Suspense fallback={<main className="flex min-h-svh items-center justify-center text-sm text-muted-foreground">Comprobando configuración…</main>}><CheckSetup setup={setup}>{children}</CheckSetup></Suspense>;
+  return <Suspense fallback={setup ? null : children}><CheckSetup setup={setup}>{children}</CheckSetup></Suspense>;
 }

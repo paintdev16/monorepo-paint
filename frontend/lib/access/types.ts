@@ -1,6 +1,7 @@
 export type Role = {
   id: string;
   name: string;
+  isRequired: boolean;
   description: string | null;
   userCount: number;
   permissionCount: number;
@@ -9,6 +10,7 @@ export type Role = {
 export type Permission = {
   id: string;
   key: string;
+  isRequired: boolean;
   description: string | null;
   roleCount: number;
 };
